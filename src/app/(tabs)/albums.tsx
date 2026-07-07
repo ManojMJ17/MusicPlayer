@@ -1,0 +1,70 @@
+import { Alert, FlatList, StyleSheet, View } from 'react-native';
+
+import { DataState } from '@/components/common/DataState';
+import { EmptyState } from '@/components/common/EmptyState';
+import { PageLayout } from '@/components/common/PageLayout';
+import { AlbumCard } from '@/components/music/AlbumCard';
+import { Theme } from '@/constants/theme';
+import { useAlbums } from '@/hooks/useAlbums';
+import { Album } from '@/types/music';
+
+export default function AlbumsScreen() {
+  const { albums, loading, error, refresh } = useAlbums();
+
+  const handleAlbumPress = (album: Album) => {
+    // Album details screen will be added later.
+    Alert.alert('Album', album.title);
+  };
+
+  const handleMorePress = (album: Album) => {
+    // Bottom sheet will be implemented later.
+    Alert.alert('Options', album.title);
+  };
+
+  return (
+    <PageLayout
+      title='Albums'
+      subtitle={`${albums.length} ${albums.length === 1 ? 'album' : 'albums'}`}
+    >
+      <DataState
+        loading={loading}
+        error={error}
+        isEmpty={albums.length === 0}
+        empty={
+          <EmptyState
+            icon='album'
+            title='No albums found'
+            description="Your music library doesn't contain any albums yet."
+          />
+        }
+      >
+        <FlatList
+          data={albums}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <AlbumCard
+              album={item}
+              onPress={handleAlbumPress}
+              onMorePress={handleMorePress}
+            />
+          )}
+          contentContainerStyle={styles.content}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          refreshing={loading}
+          onRefresh={refresh}
+          showsVerticalScrollIndicator={false}
+        />
+      </DataState>
+    </PageLayout>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: {
+    paddingBottom: Theme.spacing['4xl'],
+  },
+
+  separator: {
+    height: Theme.spacing.md,
+  },
+});
