@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { useAsyncResource } from '@/hooks/useAsyncResource';
-import { musicService } from '@/services/music.service';
+import { musicService } from '@/services/library.service';
 import { Playlist } from '@/types/music';
 
 interface UsePlaylistsReturn {

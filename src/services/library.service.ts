@@ -1,31 +1,20 @@
 import { mockSongs } from '@/data/mockSongs';
 import { Album, Artist, Playlist, Song } from '@/types/music';
 
-class MusicService {
-  /**
-   * Returns all songs.
-   * Later this will read from the device media library.
-   */
+class LibraryService {
   async getSongs(): Promise<Song[]> {
+    // Next task:
+    // return await mediaService.getSongs();
+
     return [...mockSongs];
   }
 
-  /**
-   * Returns a single song by its ID.
-   */
-  async getSongById(id: string): Promise<Song | null> {
-    const song = mockSongs.find((song) => song.id === id);
-
-    return song ?? null;
-  }
-
-  /**
-   * Groups songs into albums.
-   */
   async getAlbums(): Promise<Album[]> {
+    const songs = await this.getSongs();
+
     const albumMap = new Map<string, Album>();
 
-    for (const song of mockSongs) {
+    for (const song of songs) {
       const key = `${song.album}-${song.artist}`;
 
       if (!albumMap.has(key)) {
@@ -33,77 +22,64 @@ class MusicService {
           id: key,
           title: song.album,
           artist: song.artist,
-          artwork: song.artwork ?? null,
+          artwork: song.artwork,
           year: song.year,
           songCount: 0,
         });
       }
 
-      const album = albumMap.get(key)!;
-      album.songCount += 1;
+      albumMap.get(key)!.songCount++;
     }
 
-    return Array.from(albumMap.values()).sort((a, b) =>
+    return [...albumMap.values()].sort((a, b) =>
       a.title.localeCompare(b.title),
     );
   }
 
-  /**
-   * Groups songs into artists.
-   */
   async getArtists(): Promise<Artist[]> {
+    const songs = await this.getSongs();
+
     const artistMap = new Map<string, Artist>();
 
-    for (const song of mockSongs) {
+    for (const song of songs) {
       if (!artistMap.has(song.artist)) {
         artistMap.set(song.artist, {
           id: song.artist,
           name: song.artist,
-          artwork: song.artwork ?? null,
+          artwork: song.artwork,
           albumCount: 0,
           songCount: 0,
         });
       }
 
-      const artist = artistMap.get(song.artist)!;
-
-      artist.songCount += 1;
+      artistMap.get(song.artist)!.songCount++;
     }
 
-    // Calculate album count for each artist.
     for (const artist of artistMap.values()) {
-      const albums = new Set(
-        mockSongs
+      artist.albumCount = new Set(
+        songs
           .filter((song) => song.artist === artist.name)
           .map((song) => song.album),
-      );
-
-      artist.albumCount = albums.size;
+      ).size;
     }
 
-    return Array.from(artistMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
+    return [...artistMap.values()].sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  /**
-   * Placeholder until playlist storage is implemented.
-   */
   async getPlaylists(): Promise<Playlist[]> {
     return [];
   }
 
-  /**
-   * Performs a simple local search.
-   */
   async searchSongs(query: string): Promise<Song[]> {
+    const songs = await this.getSongs();
+
     const normalizedQuery = query.trim().toLowerCase();
 
     if (!normalizedQuery) {
-      return this.getSongs();
+      return songs;
     }
 
-    return mockSongs.filter((song) => {
+    return songs.filter((song) => {
       return (
         song.title.toLowerCase().includes(normalizedQuery) ||
         song.artist.toLowerCase().includes(normalizedQuery) ||
@@ -113,4 +89,4 @@ class MusicService {
   }
 }
 
-export const musicService = new MusicService();
+export const libraryService = new LibraryService();

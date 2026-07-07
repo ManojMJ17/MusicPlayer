@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 export interface Song {
   /** Unique identifier (mock ID now, MediaStore ID later) */
   id: string;
@@ -11,11 +13,11 @@ export interface Song {
   /** Album name */
   album: string;
 
-  /** Absolute file URI (empty in mock data if unavailable) */
-  uri: string;
+  /** Local require(...) for mock songs or file URI from device */
+  uri: number | string;
 
-  /** Album artwork URI */
-  artwork?: string | null;
+  /** Local require(...) for mock artwork or file URI from device */
+  artwork?: ImageSourcePropType | string | null;
 
   /** Duration in milliseconds */
   duration: number;
@@ -36,16 +38,16 @@ export interface Song {
   genre?: string;
 
   /** Whether the song is marked as a favorite */
-  isFavorite: boolean;
+  isFavorite?: boolean;
 
   /** Number of times the song has been played */
-  playCount: number;
+  playCount?: number;
 
   /** Last played timestamp (ISO string) */
   lastPlayedAt?: string | null;
 
   /** Date the song was added to the library */
-  addedAt: string;
+  addedAt?: string;
 }
 
 export interface Album {
@@ -67,7 +69,7 @@ export interface Artist {
 
   name: string;
 
-  artwork?: string | null;
+  artwork?: ImageSourcePropType | string | null;
 
   albumCount: number;
 
@@ -79,7 +81,7 @@ export interface Playlist {
 
   name: string;
 
-  artwork?: string | null;
+  artwork?: ImageSourcePropType | string | null;
 
   songIds: string[];
 

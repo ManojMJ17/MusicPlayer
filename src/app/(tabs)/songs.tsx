@@ -1,93 +1,72 @@
-import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
+import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
-import { Screen } from '@/components/common/Screen';
+import { PageLayout } from '@/components/common/PageLayout';
 import { SongCard } from '@/components/music/SongCard';
-import { AppText } from '@/components/ui/AppText';
 import { Theme } from '@/constants/theme';
+import { usePlayer } from '@/hooks/usePlayer';
 import { useSongs } from '@/hooks/useSongs';
 import { Song } from '@/types/music';
 
 export default function SongsScreen() {
   const { songs, loading, error, refresh } = useSongs();
 
-  const handleSongPress = (song: Song) => {
-    // Playback will be implemented in Phase 3.
-    Alert.alert('Play Song', song.title);
+  const { play } = usePlayer();
+
+  const handleSongPress = async (song: Song) => {
+    await play(song, songs);
   };
-
-  const handleMorePress = (song: Song) => {
-    // Bottom sheet will be implemented later.
-    Alert.alert('Options', song.title);
-  };
-
-  if (loading) {
-    return (
-      <Screen>
-        <View style={styles.center}>
-          <AppText>Loading songs...</AppText>
-        </View>
-      </Screen>
-    );
-  }
-
-  if (error) {
-    return (
-      <Screen>
-        <EmptyState
-          icon='error-outline'
-          title='Something went wrong'
-          description={error}
-        />
-      </Screen>
-    );
-  }
-
-  if (songs.length === 0) {
-    return (
-      <Screen>
-        <EmptyState
-          title='No songs found'
-          description='Your music library is empty.'
-        />
-      </Screen>
-    );
-  }
+  const handleMorePress = (song: Song) => {};
 
   return (
-    <Screen>
-      <FlatList
-        data={songs}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <SongCard
-            song={item}
-            onPress={handleSongPress}
-            onMorePress={handleMorePress}
+    <PageLayout
+      title='Songs'
+      subtitle={`${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`}
+    >
+      <DataState
+        loading={loading}
+        error={error}
+        isEmpty={songs.length === 0}
+        empty={
+          <EmptyState
+            icon='music-note'
+            title='No Songs Found'
+            description='No audio files were found on your device.'
           />
-        )}
-        contentContainerStyle={styles.content}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        showsVerticalScrollIndicator={false}
-        refreshing={loading}
-        onRefresh={refresh}
-      />
-    </Screen>
+        }
+      >
+        <FlatList
+          data={songs}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <SongCard
+              song={item}
+              onPress={handleSongPress}
+              onMorePress={handleMorePress}
+            />
+          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={styles.content}
+          refreshing={loading}
+          onRefresh={refresh}
+          showsVerticalScrollIndicator={false}
+        />
+      </DataState>
+    </PageLayout>
   );
 }
 
 const styles = StyleSheet.create({
   content: {
-    paddingVertical: Theme.spacing.lg,
+    paddingBottom: Theme.spacing['4xl'],
   },
 
   separator: {
     height: Theme.spacing.md,
   },
 
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  permissionButton: {
+    marginTop: Theme.spacing.xl,
   },
 });
