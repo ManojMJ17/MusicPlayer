@@ -1,13 +1,11 @@
-import { mockSongs } from '@/data/mockSongs';
+import { mediaService } from '@/services/media.service';
 import { Album, Artist, Playlist, Song } from '@/types/music';
 
 class LibraryService {
   async getSongs(): Promise<Song[]> {
-    // Next task:
-    // return await mediaService.getSongs();
-
-    return [...mockSongs];
+    return mediaService.getSongs();
   }
+
 
   async getAlbums(): Promise<Album[]> {
     const songs = await this.getSongs();

@@ -2,6 +2,12 @@ import { Colors } from '@/constants/colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
+/**
+ * Custom tab bar that renders the MiniPlayer directly above the tab bar.
+ * This achieves the Spotify-style layout:
+ *   Content → MiniPlayer → Tab Bar
+ */
+
 export default function TabsLayout() {
   return (
     <Tabs

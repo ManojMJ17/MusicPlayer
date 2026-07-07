@@ -1,34 +1,42 @@
 import { MiniPlayer } from '@/components/music/MiniPlayer';
+import { useAudio } from '@/hooks/useAudio';
 import { Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
+  // Mount the audio engine bridge for the entire app lifetime.
+  useAudio();
+
   const pathname = usePathname();
 
-  const showMiniPlayer = pathname !== '/player';
+  const showMiniPlayer =
+    pathname.startsWith('/(tabs)') ||
+    ['/songs', '/albums', '/artists', '/playlists', '/settings'].includes(pathname);
+
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style='light' />
-      <View style={styles.content}>
-        <Stack
-          screenOptions={{
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="(tabs)"
+          options={{
             headerShown: false,
           }}
         />
-      </View>
+
+        <Stack.Screen
+          name="player"
+          options={{
+            presentation: "modal",
+            animation: "slide_from_bottom",
+            headerShown: false,
+            gestureEnabled: true,
+          }}
+        />
+      </Stack>
+
       {showMiniPlayer && <MiniPlayer />}
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
-  content: {
-    flex: 1,
-  },
-});

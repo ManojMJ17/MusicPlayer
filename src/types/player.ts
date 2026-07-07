@@ -10,6 +10,8 @@ export interface PlaybackQueue {
 export interface PlaybackProgress {
   position: number;
   duration: number;
+
+  pendingSeek?: number | null;
 }
 
 export interface PlayerState {
@@ -61,6 +63,7 @@ export const INITIAL_PLAYER_STATE: PlayerState = {
   progress: {
     position: 0,
     duration: 0,
+    pendingSeek: null
   },
 
   isPlaying: false,

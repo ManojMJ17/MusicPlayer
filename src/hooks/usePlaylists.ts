@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import { useAsyncResource } from '@/hooks/useAsyncResource';
-import { musicService } from '@/services/library.service';
+import { libraryService } from '@/services/library.service';
 import { Playlist } from '@/types/music';
 
 interface UsePlaylistsReturn {
@@ -13,7 +13,7 @@ interface UsePlaylistsReturn {
 
 export function usePlaylists(): UsePlaylistsReturn {
   const loader = useMemo(() => {
-    return () => musicService.getPlaylists();
+    return () => libraryService.getPlaylists();
   }, []);
 
   const { data, loading, error, refresh } =

@@ -1,9 +1,13 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, View } from 'react-native';
-
 import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
+import { Ionicons } from '@expo/vector-icons';
+import {
+  Repeat,
+  Repeat1,
+  Shuffle
+} from 'lucide-react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 export function PlayerControls() {
   const {
@@ -30,12 +34,12 @@ export function PlayerControls() {
     <View style={styles.container}>
       <View style={styles.secondaryControls}>
         <Pressable onPress={toggleShuffle} style={styles.smallButton}>
-          <Ionicons
-            name='shuffle'
-            size={22}
+          <Shuffle
+            size={20}
             color={
               shuffleEnabled ? Colors.dark.primary : Colors.dark.textSecondary
             }
+            strokeWidth={2}
           />
         </Pressable>
 
@@ -60,15 +64,23 @@ export function PlayerControls() {
         </Pressable>
 
         <Pressable onPress={cycleRepeatMode} style={styles.smallButton}>
-          <Ionicons
-            name={repeatMode === 'one' ? 'repeat-outline' : 'repeat'}
-            size={22}
-            color={
-              repeatMode === 'off'
-                ? Colors.dark.textSecondary
-                : Colors.dark.primary
-            }
-          />
+          {repeatMode === 'one' ? (
+            <Repeat1
+              size={20}
+              color={Colors.dark.primary}
+              strokeWidth={2.25}
+            />
+          ) : (
+            <Repeat
+              size={20}
+              color={
+                repeatMode === 'off'
+                  ? Colors.dark.textSecondary
+                  : Colors.dark.primary
+              }
+              strokeWidth={2}
+            />
+          )}
         </Pressable>
       </View>
     </View>

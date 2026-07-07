@@ -19,6 +19,8 @@ interface PlayerStore extends PlayerState {
 
   seekTo: (position: number) => Promise<void>;
 
+  updateProgress: (position: number, duration: number) => void;
+
   toggleShuffle: () => void;
 
   cycleRepeatMode: () => void;
@@ -55,6 +57,10 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   async seekTo(position) {
     set(playerService.seekTo(get(), position));
+  },
+
+  updateProgress(position, duration) {
+    set(playerService.updateProgress(get(), position, duration));
   },
 
   toggleShuffle() {

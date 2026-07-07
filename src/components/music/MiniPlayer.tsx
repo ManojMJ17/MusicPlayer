@@ -7,7 +7,7 @@ import { usePlayer } from '@/hooks/usePlayer';
 import { router } from 'expo-router';
 
 export function MiniPlayer() {
-  const { currentSong, isPlaying, pause, resume, next } = usePlayer();
+  const { currentSong, isPlaying, pause, resume, next, previous } = usePlayer();
 
   if (!currentSong) {
     return null;
@@ -44,6 +44,14 @@ export function MiniPlayer() {
         </Text>
       </View>
 
+      <Pressable onPress={previous} style={styles.iconButton}>
+        <Ionicons
+          name="play-skip-back"
+          size={22}
+          color={Colors.dark.text}
+        />
+      </Pressable>
+
       <Pressable onPress={handlePlayPause} style={styles.iconButton}>
         <Ionicons
           name={isPlaying ? 'pause' : 'play'}
@@ -61,6 +69,13 @@ export function MiniPlayer() {
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+
+    left: 0,
+    right: 0,
+
+    bottom: 64, // same height as your tab bar
+
     height: 72,
 
     flexDirection: 'row',
@@ -72,6 +87,9 @@ const styles = StyleSheet.create({
 
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: Colors.dark.border,
+
+    zIndex: 999,
+    elevation: 20,
   },
 
   pressed: {

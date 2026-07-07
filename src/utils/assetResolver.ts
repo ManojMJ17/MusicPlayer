@@ -1,41 +1,31 @@
 import { ImageSourcePropType } from 'react-native';
 
-const songAssets: Record<string, number> = {
-  'cars_outside.mp3': require('@/assets/songs/cars_outside.mp3'),
-
-  // Add more songs here as you create them.
-};
-
-const artworkAssets: Record<string, ImageSourcePropType> = {
-  'cars_outside.jpg': require('@/assets/images/cars_outside.jpg'),
-
-  // Add more artwork here.
-};
-
-export function resolveSongSource(uri: string): number | { uri: string } {
-  if (uri.startsWith('file://')) {
-    return { uri };
-  }
-
-  const asset = songAssets[uri];
-
-  if (!asset) {
-    throw new Error(`Song asset not found: ${uri}`);
-  }
-
-  return asset;
-}
-
+/**
+ * Resolves a song's artwork field to an ImageSourcePropType.
+ *
+ * Real device songs return null for artwork (MediaLibrary doesn't expose
+ * embedded artwork), so this will typically return undefined and the
+ * caller falls back to the default album image.
+ *
+ * If a future implementation supplies a file:// URI for artwork,
+ * this will handle it correctly.
+ */
 export function resolveArtworkSource(
-  artwork?: string | null,
+  artwork?: ImageSourcePropType | string | null,
 ): ImageSourcePropType | undefined {
   if (!artwork) {
     return undefined;
   }
 
-  if (artwork.startsWith('file://')) {
+  if (typeof artwork === 'string' && artwork.startsWith('file://')) {
     return { uri: artwork };
   }
 
-  return artworkAssets[artwork];
+  if (typeof artwork === 'string' || typeof artwork === 'number') {
+    // number = require() result, string = remote URL — pass through as-is.
+    return artwork as ImageSourcePropType;
+  }
+
+  // Already an ImageSourcePropType object.
+  return artwork as ImageSourcePropType;
 }

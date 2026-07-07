@@ -62,6 +62,21 @@ class PlayerService {
       progress: {
         ...state.progress,
         position,
+        pendingSeek: position,
+      },
+    };
+  }
+
+  updateProgress(
+    state: PlayerState,
+    position: number,
+    duration: number
+  ): PlayerState {
+    return {
+      ...state,
+      progress: {
+        position,
+        duration,
       },
     };
   }
@@ -90,7 +105,19 @@ class PlayerService {
       return state;
     }
 
-    let nextIndex = currentIndex + 1;
+    let nextIndex;
+
+    if (state.shuffleEnabled) {
+      if (songs.length === 1) {
+        nextIndex = 0;
+      } else {
+        do {
+          nextIndex = Math.floor(Math.random() * songs.length);
+        } while (nextIndex === currentIndex);
+      }
+    } else {
+      nextIndex = currentIndex + 1;
+    }
 
     if (nextIndex >= songs.length) {
       if (state.repeatMode === 'all') {

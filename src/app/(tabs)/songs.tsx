@@ -1,5 +1,3 @@
-import { FlatList, StyleSheet, View } from 'react-native';
-
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { PageLayout } from '@/components/common/PageLayout';
@@ -8,6 +6,7 @@ import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
 import { useSongs } from '@/hooks/useSongs';
 import { Song } from '@/types/music';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 export default function SongsScreen() {
   const { songs, loading, error, refresh } = useSongs();
@@ -17,6 +16,7 @@ export default function SongsScreen() {
   const handleSongPress = async (song: Song) => {
     await play(song, songs);
   };
+
   const handleMorePress = (song: Song) => {};
 
   return (

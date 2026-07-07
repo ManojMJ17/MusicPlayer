@@ -26,8 +26,9 @@ export function PlayerProgress() {
         minimumTrackTintColor={Colors.dark.primary}
         maximumTrackTintColor={Colors.dark.border}
         thumbTintColor={Colors.dark.primary}
-        onSlidingComplete={seekTo}
-      />
+        onSlidingComplete={(value) => {
+          seekTo(value);
+        }} />
 
       <View style={styles.timeContainer}>
         <Text style={styles.time}>{formatTime(progress.position)}</Text>

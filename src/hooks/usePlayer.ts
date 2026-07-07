@@ -29,6 +29,8 @@ export function usePlayer() {
 
   const seekTo = usePlayerStore((state) => state.seekTo);
 
+  const updateProgress = usePlayerStore((state) => state.updateProgress);
+
   const toggleShuffle = usePlayerStore((state) => state.toggleShuffle);
 
   const cycleRepeatMode = usePlayerStore((state) => state.cycleRepeatMode);
