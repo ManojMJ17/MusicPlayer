@@ -7,13 +7,18 @@ import { ArtistCard } from '@/components/music/ArtistCard';
 import { Theme } from '@/constants/theme';
 import { useArtists } from '@/hooks/useArtists';
 import { Artist } from '@/types/music';
+import { router } from 'expo-router';
 
 export default function ArtistsScreen() {
   const { artists, loading, error, refresh } = useArtists();
 
   const handleArtistPress = (artist: Artist) => {
-    // Artist details screen will be implemented later.
-    Alert.alert('Artist', artist.name);
+    router.push({
+      pathname: '/library/artist/[id]',
+      params: {
+        id: artist.id,
+      },
+    });
   };
 
   const handleMorePress = (artist: Artist) => {

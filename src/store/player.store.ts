@@ -31,8 +31,9 @@ interface PlayerStore extends PlayerState {
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
   ...INITIAL_PLAYER_STATE,
 
-  async play(song, queue) {
-    set(playerService.play(get(), song, queue));
+  play: async (song, queue) => {
+
+    set((state) => playerService.play(state, song, queue));
   },
 
   async pause() {

@@ -61,7 +61,7 @@ export default function TabsLayout() {
         options={{
           title: 'Artists',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='person' color={color} size={size} />
+            <MaterialIcons name='mic' color={color} size={size} />
           ),
         }}
       />

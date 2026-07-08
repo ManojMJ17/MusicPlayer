@@ -7,13 +7,18 @@ import { PlaylistCard } from '@/components/music/PlaylistCard';
 import { Theme } from '@/constants/theme';
 import { usePlaylists } from '@/hooks/usePlaylists';
 import { Playlist } from '@/types/music';
+import { router } from 'expo-router';
 
 export default function PlaylistsScreen() {
   const { playlists, loading, error, refresh } = usePlaylists();
 
   const handlePlaylistPress = (playlist: Playlist) => {
-    // Playlist details screen will be implemented later.
-    Alert.alert('Playlist', playlist.name);
+    router.push({
+      pathname: '/library/playlist/[id]',
+      params: {
+        id: playlist.id,
+      },
+    });
   };
 
   const handleMorePress = (playlist: Playlist) => {

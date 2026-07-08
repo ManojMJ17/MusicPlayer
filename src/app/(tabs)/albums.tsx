@@ -7,13 +7,18 @@ import { AlbumCard } from '@/components/music/AlbumCard';
 import { Theme } from '@/constants/theme';
 import { useAlbums } from '@/hooks/useAlbums';
 import { Album } from '@/types/music';
+import { router } from 'expo-router';
 
 export default function AlbumsScreen() {
   const { albums, loading, error, refresh } = useAlbums();
 
   const handleAlbumPress = (album: Album) => {
-    // Album details screen will be added later.
-    Alert.alert('Album', album.title);
+    router.push({
+      pathname: '/library/album/[id]',
+      params: {
+        id: album.id,
+      },
+    });
   };
 
   const handleMorePress = (album: Album) => {
