@@ -1,17 +1,18 @@
 {
   "expo": {
-    "name": "OfflineMusicPlayer",
-    "slug": "OfflineMusicPlayer",
+    "name": "Muzic",
+    "slug": "muzic",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "offlinemusicplayer",
+    "scheme": "muzic",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "icon": "./assets/expo.icon"
-    },
+
+    "icon": "./src/assets/images/logo.png",
+
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE"
+        "foregroundImage": "./src/assets/images/logo.png",
+        "backgroundColor": "#208AEF"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -20,23 +21,27 @@
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
-      "package": "com.anonymous.OfflineMusicPlayer"
+      "package": "com.manoj.muzic"
     },
+
     "web": {
       "output": "static"
     },
+
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
+          "image": "./src/assets/images/default-album.png",
           "imageWidth": 76
         }
       ],
       "expo-status-bar",
       "expo-audio"
     ],
+
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
