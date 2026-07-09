@@ -13,6 +13,7 @@ export default function RootLayout() {
 
   const hideMiniPlayer =
     pathname === '/player' ||
+    pathname === '/about' ||
     pathname.startsWith('/library/album') ||
     pathname.startsWith('/library/artist') ||
     pathname.startsWith('/library/playlist');
@@ -24,9 +25,11 @@ export default function RootLayout() {
       <StatusBar style='light' />
 
       <View style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack>
+          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+
           <Stack.Screen
-            name='(tabs)'
+            name='about'
             options={{
               headerShown: false,
             }}

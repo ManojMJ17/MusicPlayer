@@ -24,6 +24,8 @@ interface PageLayoutProps extends PropsWithChildren {
 
   headerRight?: ReactNode;
 
+  header?: ReactNode;
+
   contentStyle?: StyleProp<ViewStyle>;
 }
 
@@ -38,28 +40,33 @@ export function PageLayout({
   onRefresh,
 
   headerRight,
+  header,
 
   contentStyle,
 }: PageLayoutProps) {
   const content = (
     <>
-      <View style={styles.header}>
-        <View style={styles.titleContainer}>
-          <AppText variant='headline'>{title}</AppText>
+      {header ? (
+        header
+      ) : (
+        <View style={styles.header}>
+          <View style={styles.titleContainer}>
+            <AppText variant='headline'>{title}</AppText>
 
-          {subtitle ? (
-            <AppText
-              variant='bodySmall'
-              color={Colors.dark.textSecondary}
-              style={styles.subtitle}
-            >
-              {subtitle}
-            </AppText>
-          ) : null}
+            {subtitle ? (
+              <AppText
+                variant='bodySmall'
+                color={Colors.dark.textSecondary}
+                style={styles.subtitle}
+              >
+                {subtitle}
+              </AppText>
+            ) : null}
+          </View>
+
+          {headerRight}
         </View>
-
-        {headerRight}
-      </View>
+      )}
 
       <View style={[styles.content, contentStyle]}>{children}</View>
     </>

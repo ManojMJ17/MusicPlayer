@@ -2,15 +2,27 @@ import { Alert, FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { IconButton } from '@/components/common/IconButton';
 import { PageLayout } from '@/components/common/PageLayout';
+import SearchBar from '@/components/common/SearchBar';
 import { AlbumCard } from '@/components/music/AlbumCard';
 import { Theme } from '@/constants/theme';
 import { useAlbums } from '@/hooks/useAlbums';
+import { useSearch } from '@/hooks/useSearch';
 import { Album } from '@/types/music';
 import { router } from 'expo-router';
+import { Search } from 'lucide-react-native';
+import { useState } from 'react';
 
 export default function AlbumsScreen() {
+  const [isSearching, setIsSearching] = useState(false);
+
   const { albums, loading, error, refresh } = useAlbums();
+
+  const { query, setQuery, clearQuery, filteredItems } = useSearch(
+    albums,
+    (album) => [album.title, album.artist],
+  );
 
   const handleAlbumPress = (album: Album) => {
     router.push({
@@ -28,8 +40,24 @@ export default function AlbumsScreen() {
 
   return (
     <PageLayout
-      title='Albums'
-      subtitle={`${albums.length} ${albums.length === 1 ? 'album' : 'albums'}`}
+      header={
+        isSearching ? (
+          <SearchBar
+            value={query}
+            placeholder='Search Albums...'
+            onChangeText={setQuery}
+            onClose={() => {
+              clearQuery();
+              setIsSearching(false);
+            }}
+          />
+        ) : undefined
+      }
+      title='Artists'
+      subtitle={`${albums.length} Albums`}
+      headerRight={
+        <IconButton icon={Search} onPress={() => setIsSearching(true)} />
+      }
     >
       <DataState
         loading={loading}
@@ -44,7 +72,7 @@ export default function AlbumsScreen() {
         }
       >
         <FlatList
-          data={albums}
+          data={filteredItems}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <AlbumCard

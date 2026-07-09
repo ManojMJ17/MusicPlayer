@@ -1,27 +1,12 @@
-import { useMemo } from 'react';
+import { useLibrary } from './useLibrary';
 
-import { useAsyncResource } from '@/hooks/useAsyncResource';
-import { libraryService } from '@/services/library.service';
-import { Album } from '@/types/music';
-
-interface UseAlbumsReturn {
-  albums: Album[];
-  loading: boolean;
-  error: string | null;
-  refresh: () => Promise<void>;
-}
-
-export function useAlbums(): UseAlbumsReturn {
-  const loader = useMemo(() => {
-    return () => libraryService.getAlbums();
-  }, []);
-
-  const { data, loading, error, refresh } = useAsyncResource<Album[]>(loader);
+export function useAlbums() {
+  const { albums, loading, error, refreshLibrary } = useLibrary();
 
   return {
-    albums: data,
+    albums,
     loading,
     error,
-    refresh,
+    refresh: refreshLibrary,
   };
 }

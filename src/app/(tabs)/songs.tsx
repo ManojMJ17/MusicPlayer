@@ -1,17 +1,32 @@
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { IconButton } from '@/components/common/IconButton';
 import { PageLayout } from '@/components/common/PageLayout';
+import SearchBar from '@/components/common/SearchBar';
 import { SongCard } from '@/components/music/SongCard';
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
+import { useSearch } from '@/hooks/useSearch';
 import { useSongs } from '@/hooks/useSongs';
 import { Song } from '@/types/music';
+import { songSearchFields } from '@/utils/searchSelectors';
+import { Search } from 'lucide-react-native';
+import { useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 export default function SongsScreen() {
+  const [isSearching, setIsSearching] = useState(false);
+
   const { songs, loading, error, refresh } = useSongs();
 
   const { play } = usePlayer();
+
+  const {
+    query,
+    setQuery,
+    clearQuery,
+    filteredItems: filteredSongs,
+  } = useSearch(songs, songSearchFields);
 
   const handleSongPress = async (song: Song) => {
     await play(song, songs);
@@ -21,8 +36,24 @@ export default function SongsScreen() {
 
   return (
     <PageLayout
+      header={
+        isSearching ? (
+          <SearchBar
+            value={query}
+            placeholder='Search songs...'
+            onChangeText={setQuery}
+            onClose={() => {
+              clearQuery();
+              setIsSearching(false);
+            }}
+          />
+        ) : undefined
+      }
       title='Songs'
-      subtitle={`${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`}
+      subtitle={`${songs.length} songs`}
+      headerRight={
+        <IconButton icon={Search} onPress={() => setIsSearching(true)} />
+      }
     >
       <DataState
         loading={loading}
@@ -37,7 +68,7 @@ export default function SongsScreen() {
         }
       >
         <FlatList
-          data={songs}
+          data={filteredSongs}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <SongCard

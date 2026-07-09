@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Muzic",
-    "slug": "muzic",
+    "name": "Music",
+    "slug": "music",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "muzic",
+    "scheme": "music",
     "userInterfaceStyle": "automatic",
 
     "icon": "./src/assets/images/logo.png",
@@ -12,7 +12,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/logo.png",
-        "backgroundColor": "#208AEF"
+        "backgroundColor": "#000000"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
@@ -21,7 +21,7 @@
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
-      "package": "com.manoj.muzic"
+      "package": "com.manoj.music"
     },
 
     "web": {
@@ -33,9 +33,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./src/assets/images/default-album.png",
-          "imageWidth": 76
+          "backgroundColor": "#000000",
+          "image": "./src/assets/images/logo.png",
+          "imageWidth": 140
         }
       ],
       "expo-status-bar",

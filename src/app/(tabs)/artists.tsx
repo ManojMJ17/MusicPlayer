@@ -2,15 +2,27 @@ import { Alert, FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { IconButton } from '@/components/common/IconButton';
 import { PageLayout } from '@/components/common/PageLayout';
+import SearchBar from '@/components/common/SearchBar';
 import { ArtistCard } from '@/components/music/ArtistCard';
 import { Theme } from '@/constants/theme';
 import { useArtists } from '@/hooks/useArtists';
+import { useSearch } from '@/hooks/useSearch';
 import { Artist } from '@/types/music';
 import { router } from 'expo-router';
+import { Search } from 'lucide-react-native';
+import { useState } from 'react';
 
 export default function ArtistsScreen() {
+  const [isSearching, setIsSearching] = useState(false);
+
   const { artists, loading, error, refresh } = useArtists();
+
+  const { query, setQuery, clearQuery, filteredItems } = useSearch(
+    artists,
+    (artist) => [artist.name],
+  );
 
   const handleArtistPress = (artist: Artist) => {
     router.push({
@@ -28,10 +40,24 @@ export default function ArtistsScreen() {
 
   return (
     <PageLayout
+      header={
+        isSearching ? (
+          <SearchBar
+            value={query}
+            placeholder='Search Artist...'
+            onChangeText={setQuery}
+            onClose={() => {
+              clearQuery();
+              setIsSearching(false);
+            }}
+          />
+        ) : undefined
+      }
       title='Artists'
-      subtitle={`${artists.length} ${
-        artists.length === 1 ? 'artist' : 'artists'
-      }`}
+      subtitle={`${artists.length} Artists`}
+      headerRight={
+        <IconButton icon={Search} onPress={() => setIsSearching(true)} />
+      }
     >
       <DataState
         loading={loading}
@@ -46,7 +72,7 @@ export default function ArtistsScreen() {
         }
       >
         <FlatList
-          data={artists}
+          data={filteredItems}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ArtistCard
