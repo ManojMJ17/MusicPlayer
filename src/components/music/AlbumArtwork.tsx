@@ -1,80 +1,86 @@
 import { Image, StyleSheet, View } from 'react-native';
 
-import { AppText } from '@/components/ui/AppText';
 import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { artworkService } from '@/services/artwork.service';
+import { useEffect, useState } from 'react';
+
 type ArtworkSize = 'sm' | 'md' | 'lg' | 'xl';
 
 interface AlbumArtworkProps {
-  uri?: string | null;
+  songId?: string | null;
   title?: string;
   size?: ArtworkSize;
 }
+
+const DEFAULT_ARTWORK = require('@/assets/images/default-album.png');
 
 const SIZE_MAP: Record<ArtworkSize, number> = {
   sm: 48,
   md: 64,
   lg: 96,
-  xl: 180,
+  xl: 120,
 };
 
-export function AlbumArtwork({ uri, title, size = 'md' }: AlbumArtworkProps) {
+export function AlbumArtwork({
+  songId,
+  title,
+  size = 'md',
+}: AlbumArtworkProps) {
   const dimension = SIZE_MAP[size];
+  const [artwork, setArtwork] = useState<string | null>(null);
 
-  if (!uri) {
-    return (
-      <View
-        style={[
-          styles.placeholder,
-          {
-            width: dimension,
-            height: dimension,
-            borderRadius: Theme.radius.md,
-          },
-        ]}
-      >
-        <AppText variant='headline'>♪</AppText>
+  useEffect(() => {
+    let mounted = true;
 
-        {size === 'xl' && title ? (
-          <AppText
-            variant='caption'
-            color={Colors.dark.textSecondary}
-            align='center'
-            numberOfLines={2}
-            style={styles.title}
-          >
-            {title}
-          </AppText>
-        ) : null}
-      </View>
-    );
-  }
+    async function loadArtwork() {
+      if (!songId) return;
+
+      const image = await artworkService.getArtwork(songId);
+
+      if (mounted) {
+        setArtwork(image);
+      }
+    }
+
+    loadArtwork();
+
+    return () => {
+      mounted = false;
+    };
+  }, [songId]);
 
   return (
-    <Image
-      source={{ uri }}
-      resizeMode='cover'
-      style={{
-        width: dimension,
-        height: dimension,
-        borderRadius: Theme.radius.md,
-      }}
-    />
+    <View
+      style={[
+        styles.container,
+        {
+          width: dimension,
+          height: dimension,
+          borderRadius: Theme.radius.md,
+        },
+      ]}
+    >
+      <Image
+        source={artwork ? { uri: artwork } : DEFAULT_ARTWORK}
+        resizeMode='cover'
+        style={{
+          width: dimension,
+          height: dimension,
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  placeholder: {
-    backgroundColor: Colors.dark.surfaceVariant,
-    borderWidth: 1,
-    borderColor: Colors.dark.border,
-    justifyContent: 'center',
-    alignItems: 'center',
+  container: {
     overflow: 'hidden',
+    backgroundColor: Colors.dark.surfaceVariant,
   },
 
-  title: {
-    marginTop: Theme.spacing.sm,
-    paddingHorizontal: Theme.spacing.sm,
+  image: {
+    width: '100%',
+    height: '100%',
   },
 });

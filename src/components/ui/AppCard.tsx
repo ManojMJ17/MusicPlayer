@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    padding: Theme.spacing.lg,
+    padding: Theme.spacing.sm,
   },
 
   pressed: {

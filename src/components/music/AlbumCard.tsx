@@ -18,7 +18,7 @@ interface AlbumCardProps {
 function AlbumCardComponent({ album, onPress, onMorePress }: AlbumCardProps) {
   return (
     <AppCard onPress={() => onPress(album)} contentStyle={styles.content}>
-      <AlbumArtwork uri={album.artwork} title={album.title} size='md' />
+      <AlbumArtwork songId={album.coverSongId} title={album.title} size='md' />
 
       <View style={styles.info}>
         <AppText variant='body' numberOfLines={1} style={styles.title}>

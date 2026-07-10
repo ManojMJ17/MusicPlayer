@@ -13,6 +13,8 @@ export interface Song {
   /** Album name */
   album: string;
 
+  albumArtist?: string;
+
   /** Local require(...) for mock songs or file URI from device */
   uri: number | string;
 
@@ -62,6 +64,8 @@ export interface Album {
   year?: number;
 
   songCount: number;
+
+  coverSongId?: string;
 }
 
 export interface Artist {

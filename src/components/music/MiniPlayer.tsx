@@ -1,13 +1,43 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
-import { router } from 'expo-router';
+import { artworkService } from '@/services/artwork.service';
+import { Image } from 'expo-image';
+import { useEffect, useState } from 'react';
+
+const DEFAULT_ARTWORK = require('@/assets/images/default-album.png');
 
 export function MiniPlayer() {
   const { currentSong, isPlaying, pause, resume, next, previous } = usePlayer();
+
+  const [artwork, setArtwork] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadArtwork() {
+      if (!currentSong) {
+        setArtwork(null);
+        return;
+      }
+
+      const image = await artworkService.getArtwork(currentSong.id);
+
+      if (mounted) {
+        setArtwork(image);
+      }
+    }
+
+    loadArtwork();
+
+    return () => {
+      mounted = false;
+    };
+  }, [currentSong]);
 
   if (!currentSong) {
     return null;
@@ -26,13 +56,10 @@ export function MiniPlayer() {
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
       onPress={() => router.push('/player')}
     >
-      <View style={styles.artwork}>
-        <Ionicons
-          name='musical-notes'
-          size={22}
-          color={Colors.dark.textSecondary}
-        />
-      </View>
+      <Image
+        source={artwork ? { uri: artwork } : DEFAULT_ARTWORK}
+        style={styles.artwork}
+      />
 
       <View style={styles.info}>
         <Text numberOfLines={1} style={styles.title}>
@@ -45,11 +72,7 @@ export function MiniPlayer() {
       </View>
 
       <Pressable onPress={previous} style={styles.iconButton}>
-        <Ionicons
-          name="play-skip-back"
-          size={22}
-          color={Colors.dark.text}
-        />
+        <Ionicons name='play-skip-back' size={22} color={Colors.dark.text} />
       </Pressable>
 
       <Pressable onPress={handlePlayPause} style={styles.iconButton}>
@@ -100,13 +123,8 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-
-    backgroundColor: Colors.dark.surfaceVariant,
-
-    justifyContent: 'center',
-    alignItems: 'center',
-
     marginRight: Theme.spacing.md,
+    backgroundColor: Colors.dark.surfaceVariant,
   },
 
   info: {

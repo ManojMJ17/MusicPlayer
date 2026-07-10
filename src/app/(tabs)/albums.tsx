@@ -53,7 +53,7 @@ export default function AlbumsScreen() {
           />
         ) : undefined
       }
-      title='Artists'
+      title='Albums'
       subtitle={`${albums.length} Albums`}
       headerRight={
         <IconButton icon={Search} onPress={() => setIsSearching(true)} />

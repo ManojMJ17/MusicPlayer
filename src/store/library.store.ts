@@ -33,12 +33,13 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
     set({ loading: true, error: null });
 
     try {
-      const [songs, albums, artists, playlists] = await Promise.all([
-        libraryService.getSongs(),
-        libraryService.getAlbums(),
-        libraryService.getArtists(),
-        libraryService.getPlaylists(),
-      ]);
+      const songs = await libraryService.getSongs();
+
+      const albums = libraryService.buildAlbums(songs);
+
+      const artists = libraryService.buildArtists(songs);
+
+      const playlists = libraryService.buildPlaylists(songs);
 
       set({
         songs,
@@ -58,8 +59,35 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
   },
 
   refreshLibrary: async () => {
-    set({ hasLoaded: false });
+    set({
+      loading: true,
+      hasLoaded: false,
+      error: null,
+    });
 
-    await get().loadLibrary();
+    try {
+      const songs = await libraryService.getSongs(true);
+
+      const albums = libraryService.buildAlbums(songs);
+
+      const artists = libraryService.buildArtists(songs);
+
+      const playlists = libraryService.buildPlaylists(songs);
+
+      set({
+        songs,
+        albums,
+        artists,
+        playlists,
+        loading: false,
+        hasLoaded: true,
+      });
+    } catch (error) {
+      set({
+        loading: false,
+        error:
+          error instanceof Error ? error.message : 'Failed to refresh library',
+      });
+    }
   },
 }));

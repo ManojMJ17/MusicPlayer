@@ -1,10 +1,37 @@
 import { mediaService } from '@/services/media.service';
 import { Album, Artist, Playlist, Song } from '@/types/music';
+import { libraryCacheService } from './libraryCache.service';
 import { libraryMetadataService } from './libraryMetadataService';
 
 class LibraryService {
-  async getSongs(): Promise<Song[]> {
+  async getSongs(forceRefresh = false): Promise<Song[]> {
+    if (!forceRefresh) {
+      const cachedSongs = await libraryCacheService.get();
+
+      if (cachedSongs) {
+        return Promise.all(
+          cachedSongs.map(async (song) => {
+            const metadata = await libraryMetadataService.get(song.id);
+
+            return {
+              ...song,
+              playCount: metadata.playCount,
+              lastPlayedAt: metadata.lastPlayedAt,
+              isFavorite: metadata.isFavorite,
+            };
+          }),
+        );
+      }
+    }
+
     const songs = await mediaService.getSongs();
+
+    const cacheSongs = songs.map(({ artwork, ...song }) => ({
+      ...song,
+      artwork: null,
+    }));
+
+    await libraryCacheService.set(cacheSongs);
 
     return Promise.all(
       songs.map(async (song) => {
@@ -16,26 +43,24 @@ class LibraryService {
           lastPlayedAt: metadata.lastPlayedAt,
           isFavorite: metadata.isFavorite,
         };
-      })
+      }),
     );
   }
 
-  async getAlbums(): Promise<Album[]> {
-    const songs = await this.getSongs();
-
+  buildAlbums(songs: Song[]): Album[] {
     const albumMap = new Map<string, Album>();
 
     for (const song of songs) {
-      const key = `${song.album}-${song.artist}`;
+      const key = song.album.trim().toLowerCase();
 
       if (!albumMap.has(key)) {
         albumMap.set(key, {
           id: key,
           title: song.album,
-          artist: song.artist,
-          // artwork: song.artwork,
+          artist: song.albumArtist ?? song.artist,
           year: song.year,
           songCount: 0,
+          coverSongId: song.id,
         });
       }
 
@@ -47,9 +72,8 @@ class LibraryService {
     );
   }
 
-
   async getAlbum(id: string): Promise<Album | null> {
-    const albums = await this.getAlbums();
+    const albums = this.buildAlbums(await this.getSongs());
 
     return albums.find((album) => album.id === id) ?? null;
   }
@@ -58,7 +82,9 @@ class LibraryService {
     const songs = await this.getSongs();
 
     return songs
-      .filter((song) => `${song.album}-${song.artist}` === id)
+      .filter(
+        (song) => song.album.trim().toLowerCase() === id.trim().toLowerCase(),
+      )
       .sort((a, b) => {
         if (a.trackNumber != null && b.trackNumber != null) {
           return a.trackNumber - b.trackNumber;
@@ -68,16 +94,15 @@ class LibraryService {
       });
   }
 
-
-  async getArtists(): Promise<Artist[]> {
-    const songs = await this.getSongs();
-
+  buildArtists(songs: Song[]): Artist[] {
     const artistMap = new Map<string, Artist>();
 
     for (const song of songs) {
-      if (!artistMap.has(song.artist)) {
-        artistMap.set(song.artist, {
-          id: song.artist,
+      const key = song.artist.trim().toLowerCase();
+
+      if (!artistMap.has(key)) {
+        artistMap.set(key, {
+          id: key,
           name: song.artist,
           artwork: song.artwork,
           albumCount: 0,
@@ -85,13 +110,13 @@ class LibraryService {
         });
       }
 
-      artistMap.get(song.artist)!.songCount++;
+      artistMap.get(key)!.songCount++;
     }
 
     for (const artist of artistMap.values()) {
       artist.albumCount = new Set(
         songs
-          .filter((song) => song.artist === artist.name)
+          .filter((song) => song.artist.trim().toLowerCase() === artist.id)
           .map((song) => song.album),
       ).size;
     }
@@ -100,7 +125,7 @@ class LibraryService {
   }
 
   async getArtist(id: string): Promise<Artist | null> {
-    const artists = await this.getArtists();
+    const artists = this.buildArtists(await this.getSongs());
 
     return artists.find((artist) => artist.id === id) ?? null;
   }
@@ -109,13 +134,13 @@ class LibraryService {
     const songs = await this.getSongs();
 
     return songs
-      .filter((song) => song.artist === id)
+      .filter(
+        (song) => song.artist.trim().toLowerCase() === id.trim().toLowerCase(),
+      )
       .sort((a, b) => a.title.localeCompare(b.title));
   }
 
-  async getPlaylists(): Promise<Playlist[]> {
-    const songs = await this.getSongs();
-
+  buildPlaylists(songs: Song[]): Playlist[] {
     return [
       {
         id: 'recently-added',
@@ -125,7 +150,7 @@ class LibraryService {
           .sort(
             (a, b) =>
               new Date(b.addedAt ?? 0).getTime() -
-              new Date(a.addedAt ?? 0).getTime()
+              new Date(a.addedAt ?? 0).getTime(),
           )
           .map((song) => song.id),
         createdAt: '',
@@ -137,11 +162,11 @@ class LibraryService {
         name: 'Recently Played',
         artwork: null,
         songIds: [...songs]
-          .filter(song => song.lastPlayedAt)
+          .filter((song) => song.lastPlayedAt)
           .sort(
             (a, b) =>
               new Date(b.lastPlayedAt!).getTime() -
-              new Date(a.lastPlayedAt!).getTime()
+              new Date(a.lastPlayedAt!).getTime(),
           )
           .map((song) => song.id),
         createdAt: '',
@@ -153,7 +178,7 @@ class LibraryService {
         name: 'Most Played',
         artwork: null,
         songIds: [...songs]
-          .filter(song => (song.playCount ?? 0) > 0)
+          .filter((song) => (song.playCount ?? 0) > 0)
           .sort((a, b) => (b.playCount ?? 0) - (a.playCount ?? 0))
           .map((song) => song.id),
         createdAt: '',
@@ -163,7 +188,7 @@ class LibraryService {
   }
 
   async getPlaylist(id: string): Promise<Playlist | null> {
-    const playlists = await this.getPlaylists();
+    const playlists = this.buildPlaylists(await this.getSongs());
 
     return playlists.find((playlist) => playlist.id === id) ?? null;
   }

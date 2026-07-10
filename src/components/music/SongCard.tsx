@@ -7,8 +7,6 @@ import { AppText } from '@/components/ui/AppText';
 import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { Song } from '@/types/music';
-import { formatDuration } from '@/utils/time';
-import { AlbumArtwork } from './AlbumArtwork';
 
 interface SongCardProps {
   song: Song;
@@ -19,8 +17,6 @@ interface SongCardProps {
 function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
   return (
     <AppCard onPress={() => onPress(song)} contentStyle={styles.content}>
-      <AlbumArtwork uri={song.artwork} title={song.album} size='md' />
-
       <View style={styles.info}>
         <AppText variant='body' numberOfLines={1} style={styles.title}>
           {song.title}
@@ -31,11 +27,7 @@ function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
           color={Colors.dark.textSecondary}
           numberOfLines={1}
         >
-          {song.artist}
-        </AppText>
-
-        <AppText variant='caption' color={Colors.dark.textSecondary}>
-          {song.album} • {formatDuration(song.duration)}
+          {song.artist} - {song.album}
         </AppText>
       </View>
 
@@ -61,7 +53,7 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Theme.spacing.md,
+    gap: Theme.spacing.sm,
   },
 
   info: {

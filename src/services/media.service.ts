@@ -6,31 +6,7 @@ import {
 } from 'expo-media-library/legacy';
 
 import { Song } from '@/types/music';
-
-/**
- * Strips the file extension from a filename.
- * e.g. "Cars Outside.mp3" → "Cars Outside"
- */
-function stripExtension(filename: string): string {
-  return filename.replace(/\.[^.]+$/, '');
-}
-
-/**
- * Parses "Artist - Title" convention or falls back to just the filename stem.
- */
-function parseFilename(filename: string): { title: string; artist: string } {
-  const stem = stripExtension(filename);
-  const dashIndex = stem.indexOf(' - ');
-
-  if (dashIndex !== -1) {
-    return {
-      artist: stem.slice(0, dashIndex).trim(),
-      title: stem.slice(dashIndex + 3).trim(),
-    };
-  }
-
-  return { title: stem, artist: 'Unknown Artist' };
-}
+import MusicMetadataModule from '../../modules/music-metadata/src/MusicMetadataModule';
 
 /** Page size for getAssetsAsync pagination. */
 const PAGE_SIZE = 500;
@@ -51,7 +27,6 @@ class MediaService {
    */
   async getSongs(): Promise<Song[]> {
     const granted = await this.requestPermission();
-
     if (!granted) {
       throw new Error(
         'Permission to access media library was denied. Please grant permission in Settings.',
@@ -71,30 +46,58 @@ class MediaService {
         sortBy: [[SortBy.creationTime, false]], // newest first
       });
 
-      for (const asset of result.assets) {
-        const { title, artist } = parseFilename(asset.filename ?? '');
+      const pageSongs = await Promise.all(
+        result.assets.map(async (asset) => {
+          let metadata = null;
 
-        // asset.duration is in seconds; Song.duration is in milliseconds.
-        const durationMs = asset.duration > 0 ? Math.round(asset.duration * 1000) : 0;
+          try {
+            metadata = await MusicMetadataModule.getMetadata(asset.id);
+          } catch (e) {
+            console.warn(`Skipping unreadable file: ${asset.filename}`);
+            console.warn(e);
+            return null;
+          }
 
-        // asset.creationTime is a UNIX timestamp in milliseconds.
-        const addedAt =
-          asset.creationTime > 0
-            ? new Date(asset.creationTime).toISOString()
-            : undefined;
+          const duration =
+            metadata?.duration ??
+            (asset.duration > 0 ? Math.round(asset.duration * 1000) : 0);
+          return {
+            id: asset.id,
 
-        songs.push({
-          id: asset.id,
-          title,
-          artist,
-          album: 'Unknown Album',
-          uri: asset.uri, // file:// URI on Android, ph:// on iOS
-          artwork: null,
-          duration: durationMs,
-          addedAt,
-        });
-      }
+            title:
+              metadata?.title ??
+              asset.filename?.replace(/\.[^.]+$/, '') ??
+              'Unknown Title',
 
+            artist: metadata?.artist ?? 'Unknown Artist',
+
+            album: metadata?.album ?? 'Unknown Album',
+
+            albumArtist: metadata?.albumArtist ?? undefined,
+
+            genre: metadata?.genre ?? undefined,
+
+            year: metadata?.year ? Number(metadata.year) : undefined,
+
+            trackNumber: metadata?.trackNumber ?? undefined,
+
+            uri: asset.uri,
+
+            artwork: metadata?.artwork
+              ? `data:image/jpeg;base64,${metadata.artwork}`
+              : null,
+
+            duration,
+
+            addedAt:
+              asset.creationTime > 0
+                ? new Date(asset.creationTime).toISOString()
+                : undefined,
+          };
+        }),
+      );
+
+      songs.push(...pageSongs.filter((song): song is Song => song !== null));
       hasNextPage = result.hasNextPage;
       after = result.endCursor;
     }

@@ -22,7 +22,7 @@ function ArtistCardComponent({
   return (
     <AppCard onPress={() => onPress(artist)} contentStyle={styles.content}>
       <View style={styles.avatar}>
-        <MaterialIcons name='person' size={32} color={Colors.dark.primary} />
+        <MaterialIcons name='mic' size={32} color={Colors.dark.primary} />
       </View>
 
       <View style={styles.info}>
