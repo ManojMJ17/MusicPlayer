@@ -1,11 +1,19 @@
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
 import { useTheme } from '@/theme/useTheme';
-import { Ionicons } from '@expo/vector-icons';
-import { Repeat, Repeat1, Shuffle } from 'lucide-react-native';
+import {
+  Repeat,
+  Repeat1,
+  Shuffle,
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+} from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 export function PlayerControls() {
+  const { colors } = useTheme();
   const {
     isPlaying,
     pause,
@@ -18,15 +26,13 @@ export function PlayerControls() {
     cycleRepeatMode,
   } = usePlayer();
 
-  const handlePlayPause = async () => {
+  const handlePlayPause = () => {
     if (isPlaying) {
-      await pause();
+      pause();
     } else {
-      await resume();
+      resume();
     }
   };
-
-  const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
@@ -40,22 +46,22 @@ export function PlayerControls() {
         </Pressable>
 
         <Pressable onPress={previous} style={styles.mainButton}>
-          <Ionicons name='play-skip-back' size={30} color={colors.text} />
+          <SkipBack size={30} color={colors.text} fill={colors.text} />
         </Pressable>
 
         <Pressable
           onPress={handlePlayPause}
           style={[styles.playButton, { backgroundColor: colors.primary }]}
         >
-          <Ionicons
-            name={isPlaying ? 'pause' : 'play'}
-            size={34}
-            color={colors.background}
-          />
+          {isPlaying ? (
+            <Pause size={34} color={colors.background} fill={colors.background} />
+          ) : (
+            <Play size={34} color={colors.background} fill={colors.background} />
+          )}
         </Pressable>
 
         <Pressable onPress={next} style={styles.mainButton}>
-          <Ionicons name='play-skip-forward' size={30} color={colors.text} />
+          <SkipForward size={30} color={colors.text} fill={colors.text} />
         </Pressable>
 
         <Pressable onPress={cycleRepeatMode} style={styles.smallButton}>
@@ -105,7 +111,6 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-
     justifyContent: 'center',
     alignItems: 'center',
   },

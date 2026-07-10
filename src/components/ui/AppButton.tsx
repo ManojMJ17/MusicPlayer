@@ -8,6 +8,8 @@ interface AppButtonProps {
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
+  backgroundColor?: string;
+  textColor?: string;
 }
 
 export function AppButton({
@@ -15,9 +17,15 @@ export function AppButton({
   onPress,
   disabled = false,
   loading = false,
+  backgroundColor,
+  textColor,
 }: AppButtonProps) {
   const isDisabled = disabled || loading;
   const { colors } = useTheme();
+  
+  const finalBgColor = backgroundColor || colors.primary;
+  const finalTextColor = textColor || colors.background;
+
   return (
     <Pressable
       onPress={onPress}
@@ -26,13 +34,13 @@ export function AppButton({
         styles.button,
         pressed && !isDisabled && styles.pressed,
         isDisabled && styles.disabled,
-        { backgroundColor: colors.primary },
+        { backgroundColor: finalBgColor },
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={colors.text} />
+        <ActivityIndicator color={finalTextColor} />
       ) : (
-        <Text style={[styles.text, { color: colors.text }]}>{title}</Text>
+        <Text style={[styles.text, { color: finalTextColor }]}>{title}</Text>
       )}
     </Pressable>
   );

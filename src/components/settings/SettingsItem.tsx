@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { ChevronRight, LucideIcon } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
@@ -9,14 +9,14 @@ import { useTheme } from '@/theme/useTheme';
 export interface SettingsItemProps {
   title: string;
   subtitle?: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
+  icon: LucideIcon;
   onPress: () => void;
 }
 
 export function SettingsItem({
   title,
   subtitle,
-  icon,
+  icon: IconComponent,
   onPress,
 }: SettingsItemProps) {
   const { colors } = useTheme();
@@ -26,7 +26,7 @@ export function SettingsItem({
       <View
         style={[styles.leading, { backgroundColor: colors.surfaceVariant }]}
       >
-        <MaterialIcons name={icon} size={22} color={colors.primary} />
+        <IconComponent size={22} color={colors.primary} />
       </View>
 
       <View style={styles.textContainer}>
@@ -43,8 +43,7 @@ export function SettingsItem({
         ) : null}
       </View>
 
-      <MaterialIcons
-        name='chevron-right'
+      <ChevronRight
         size={22}
         color={colors.textSecondary}
       />

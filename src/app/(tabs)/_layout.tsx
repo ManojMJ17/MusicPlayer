@@ -1,6 +1,6 @@
 import { useTheme } from '@/theme/useTheme';
-import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { Music, Disc, Mic, ListMusic, Heart, Settings } from 'lucide-react-native';
 
 /**
  * Custom tab bar that renders the MiniPlayer directly above the tab bar.
@@ -43,7 +43,7 @@ export default function TabsLayout() {
         options={{
           title: 'Songs',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='library-music' color={color} size={size} />
+            <Music color={color} size={size} />
           ),
         }}
       />
@@ -53,7 +53,7 @@ export default function TabsLayout() {
         options={{
           title: 'Albums',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='album' color={color} size={size} />
+            <Disc color={color} size={size} />
           ),
         }}
       />
@@ -63,7 +63,7 @@ export default function TabsLayout() {
         options={{
           title: 'Artists',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='mic' color={color} size={size} />
+            <Mic color={color} size={size} />
           ),
         }}
       />
@@ -73,7 +73,7 @@ export default function TabsLayout() {
         options={{
           title: 'Playlists',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='queue-music' color={color} size={size} />
+            <ListMusic color={color} size={size} />
           ),
         }}
       />
@@ -83,7 +83,7 @@ export default function TabsLayout() {
         options={{
           title: 'Favorites',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='favorite' color={color} size={size} />
+            <Heart color={color} size={size} />
           ),
         }}
       />
@@ -93,7 +93,7 @@ export default function TabsLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='settings' color={color} size={size} />
+            <Settings color={color} size={size} />
           ),
         }}
       />

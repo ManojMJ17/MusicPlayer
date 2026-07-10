@@ -1,24 +1,36 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Music, Heart, Disc, Mic, ListMusic, Search, LucideIcon } from 'lucide-react-native';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
 
+const ICON_MAP: Record<string, LucideIcon> = {
+  'library-music': Music,
+  'music': Music,
+  'favorite': Heart,
+  'heart': Heart,
+  'album': Disc,
+  'mic': Mic,
+  'queue-music': ListMusic,
+  'search': Search,
+};
+
 interface EmptyStateProps {
-  icon?: keyof typeof MaterialIcons.glyphMap;
+  icon?: string;
   title: string;
   description?: string;
   style?: StyleProp<ViewStyle>;
 }
 
 export function EmptyState({
-  icon = 'library-music',
+  icon = 'music',
   title,
   description,
   style,
 }: EmptyStateProps) {
   const { colors } = useTheme();
+  const IconComponent = ICON_MAP[icon] || Music;
 
   return (
     <View style={[styles.container, style]}>
@@ -31,7 +43,7 @@ export function EmptyState({
           },
         ]}
       >
-        <MaterialIcons name={icon} size={48} color={colors.textSecondary} />
+        <IconComponent size={48} color={colors.textSecondary} />
       </View>
 
       <AppText variant='title' align='center'>

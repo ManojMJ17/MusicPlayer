@@ -31,7 +31,7 @@ export function PlayerProgress() {
         maximumValue={progress.duration || 1}
         value={displayValue}
         minimumTrackTintColor={colors.primary}
-        maximumTrackTintColor={colors.border}
+        maximumTrackTintColor={colors.text}
         thumbTintColor={colors.primary}
         onSlidingStart={(value) => {
           setSliding(true);

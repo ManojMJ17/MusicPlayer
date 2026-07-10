@@ -14,7 +14,7 @@ interface ThemeStore {
 }
 
 export const useThemeStore = create<ThemeStore>((set) => ({
-  theme: 'dark',
+  theme: 'amoled',
   isLoaded: false,
 
   async setTheme(theme) {
@@ -52,7 +52,7 @@ export const useThemeStore = create<ThemeStore>((set) => ({
     }
 
     set({
-      theme: 'dark',
+      theme: 'amoled',
       isLoaded: true,
     });
   },

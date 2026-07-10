@@ -1,4 +1,3 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
   Image,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Music, LucideIcon } from 'lucide-react-native';
 
 import { AppText } from '@/components/ui/AppText';
 import { Theme } from '@/constants/theme';
@@ -16,8 +16,7 @@ import { useTheme } from '@/theme/useTheme';
 
 export interface ActionSheetOption {
   label: string;
-  icon: keyof typeof MaterialIcons.glyphMap | keyof typeof Ionicons.glyphMap;
-  iconType?: 'material' | 'ionicons';
+  icon: LucideIcon;
   onPress: () => void;
   destructive?: boolean;
 }
@@ -48,7 +47,20 @@ export function ActionSheet({
     if (!headerImage) {
       return (
         <View style={[styles.artworkContainer, { backgroundColor: colors.surfaceVariant }]}>
-          <MaterialIcons name='music-note' size={24} color={colors.primary} />
+          <Music size={24} color={colors.primary} />
+        </View>
+      );
+    }
+    const isImageSource =
+      typeof headerImage === 'string' ||
+      typeof headerImage === 'number' ||
+      (typeof headerImage === 'object' && headerImage !== null && 'uri' in headerImage);
+
+    if (!isImageSource) {
+      const CustomIcon = headerImage;
+      return (
+        <View style={[styles.artworkContainer, { backgroundColor: colors.surfaceVariant }]}>
+          {React.isValidElement(CustomIcon) ? CustomIcon : <CustomIcon size={24} color={colors.primary} />}
         </View>
       );
     }
@@ -108,8 +120,7 @@ export function ActionSheet({
               contentContainerStyle={styles.scrollContent}
             >
               {options.map((option, index) => {
-                const IconComponent =
-                  option.iconType === 'ionicons' ? Ionicons : MaterialIcons;
+                const IconComponent = option.icon;
                 const tintColor = option.destructive ? '#ff453a' : colors.icon;
 
                 return (
@@ -121,7 +132,6 @@ export function ActionSheet({
                   >
                     <View style={styles.iconWrapper}>
                       <IconComponent
-                        name={option.icon as any}
                         size={22}
                         color={tintColor}
                       />

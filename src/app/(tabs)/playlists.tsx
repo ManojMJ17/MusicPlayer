@@ -1,4 +1,4 @@
-import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -6,11 +6,13 @@ import { PageLayout } from '@/components/common/PageLayout';
 import { PlaylistCard } from '@/components/music/PlaylistCard';
 import { Theme } from '@/constants/theme';
 import { usePlaylists } from '@/hooks/usePlaylists';
+import { usePlaylistActions } from '@/hooks/useSongActions';
 import { Playlist } from '@/types/music';
 import { router } from 'expo-router';
 
 export default function PlaylistsScreen() {
   const { playlists, loading, error, refresh } = usePlaylists();
+  const { openMenu, renderActionSheets } = usePlaylistActions();
 
   const handlePlaylistPress = (playlist: Playlist) => {
     router.push({
@@ -22,8 +24,7 @@ export default function PlaylistsScreen() {
   };
 
   const handleMorePress = (playlist: Playlist) => {
-    // Bottom sheet will be implemented later.
-    Alert.alert('Options', playlist.name);
+    openMenu(playlist);
   };
 
   return (
@@ -62,6 +63,7 @@ export default function PlaylistsScreen() {
           onRefresh={refresh}
         />
       </DataState>
+      {renderActionSheets()}
     </PageLayout>
   );
 }

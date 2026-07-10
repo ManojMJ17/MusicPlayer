@@ -20,9 +20,11 @@ interface LibraryState {
   refreshLibrary: () => Promise<void>;
   toggleFavorite: (songId: string) => Promise<void>;
   incrementPlay: (songId: string) => Promise<void>;
-  createPlaylist: (name: string) => Promise<Playlist>;
+  createPlaylist: (name: string, icon?: string) => Promise<Playlist>;
   addSongToPlaylist: (playlistId: string, songId: string) => Promise<void>;
   removeSongFromPlaylist: (playlistId: string, songId: string) => Promise<void>;
+  renamePlaylist: (id: string, name: string, icon?: string) => Promise<void>;
+  deletePlaylist: (id: string) => Promise<void>;
 }
 
 export const useLibraryStore = create<LibraryState>((set, get) => ({
@@ -195,8 +197,8 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
     }
   },
 
-  createPlaylist: async (name: string) => {
-    const newPlaylist = await customPlaylistService.create(name);
+  createPlaylist: async (name: string, icon?: string) => {
+    const newPlaylist = await customPlaylistService.create(name, icon);
 
     const { songs } = get();
     const smartPlaylists = libraryService.buildPlaylists(songs);
@@ -223,6 +225,30 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
 
   removeSongFromPlaylist: async (playlistId: string, songId: string) => {
     await customPlaylistService.removeSong(playlistId, songId);
+
+    const { songs } = get();
+    const smartPlaylists = libraryService.buildPlaylists(songs);
+    const customPlaylists = await customPlaylistService.getAll();
+
+    set({
+      playlists: [...smartPlaylists, ...customPlaylists],
+    });
+  },
+
+  renamePlaylist: async (id: string, name: string, icon?: string) => {
+    await customPlaylistService.edit(id, name, icon);
+
+    const { songs } = get();
+    const smartPlaylists = libraryService.buildPlaylists(songs);
+    const customPlaylists = await customPlaylistService.getAll();
+
+    set({
+      playlists: [...smartPlaylists, ...customPlaylists],
+    });
+  },
+
+  deletePlaylist: async (id: string) => {
+    await customPlaylistService.delete(id);
 
     const { songs } = get();
     const smartPlaylists = libraryService.buildPlaylists(songs);

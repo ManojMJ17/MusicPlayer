@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { MoreVertical, UserRound } from 'lucide-react-native';
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -32,7 +32,7 @@ function ArtistCardComponent({
           },
         ]}
       >
-        <MaterialIcons name='mic' size={32} color={colors.primary} />
+        <UserRound size={30} strokeWidth={2} color={colors.primary} />
       </View>
 
       <View style={styles.info}>
@@ -56,7 +56,7 @@ function ArtistCardComponent({
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
+        <MoreVertical size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );

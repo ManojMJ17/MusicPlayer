@@ -87,6 +87,8 @@ export interface Playlist {
 
   artwork?: ImageSourcePropType | string | null;
 
+  icon?: string;
+
   songIds: string[];
 
   createdAt: string;

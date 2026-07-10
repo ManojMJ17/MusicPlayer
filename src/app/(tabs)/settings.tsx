@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { Alert, StyleSheet, View } from 'react-native';
+import { Flame, Music, Palette, Info } from 'lucide-react-native';
 
 import { PageLayout } from '@/components/common/PageLayout';
 import { SettingsItem } from '@/components/settings/SettingsItem';
@@ -9,7 +10,6 @@ import { Theme } from '@/constants/theme';
 import { useLibraryStore } from '@/store/library.store';
 import { ThemePicker } from '@/theme/ThemePicker';
 import { useTheme } from '@/theme/useTheme';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 
 export default function SettingsScreen() {
@@ -97,10 +97,10 @@ export default function SettingsScreen() {
               <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
 
               <View style={styles.mostPlayedHeader}>
-                <MaterialIcons
-                  name='whatshot'
+                <Flame
                   size={16}
                   color={theme.colors.primary}
+                  fill={theme.colors.primary}
                   style={{ marginRight: 6 }}
                 />
                 <AppText
@@ -129,7 +129,7 @@ export default function SettingsScreen() {
         <SettingsItem
           title='Scan Library'
           subtitle='Find newly added music'
-          icon='library-music'
+          icon={Music}
           onPress={async () => {
             await refreshLibrary();
             Alert.alert(
@@ -142,14 +142,14 @@ export default function SettingsScreen() {
         <SettingsItem
           title='Theme'
           subtitle={theme.displayName}
-          icon='palette'
+          icon={Palette}
           onPress={() => setThemePickerVisible(true)}
         />
 
         <SettingsItem
           title='About'
           subtitle='Version 1.0.0'
-          icon='info-outline'
+          icon={Info}
           onPress={() => router.push('/about')}
         />
       </View>

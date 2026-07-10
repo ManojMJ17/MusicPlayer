@@ -1,4 +1,4 @@
-import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -9,6 +9,7 @@ import { ArtistCard } from '@/components/music/ArtistCard';
 import { Theme } from '@/constants/theme';
 import { useArtists } from '@/hooks/useArtists';
 import { useSearch } from '@/hooks/useSearch';
+import { useArtistActions } from '@/hooks/useSongActions';
 import { Artist } from '@/types/music';
 import { router } from 'expo-router';
 import { Search } from 'lucide-react-native';
@@ -18,6 +19,7 @@ export default function ArtistsScreen() {
   const [isSearching, setIsSearching] = useState(false);
 
   const { artists, loading, error, refresh } = useArtists();
+  const { openMenu, renderActionSheets } = useArtistActions();
 
   const { query, setQuery, clearQuery, filteredItems } = useSearch(
     artists,
@@ -34,8 +36,7 @@ export default function ArtistsScreen() {
   };
 
   const handleMorePress = (artist: Artist) => {
-    // Bottom sheet will be implemented later.
-    Alert.alert('Options', artist.name);
+    openMenu(artist);
   };
 
   return (
@@ -88,6 +89,7 @@ export default function ArtistsScreen() {
           onRefresh={refresh}
         />
       </DataState>
+      {renderActionSheets()}
     </PageLayout>
   );
 }

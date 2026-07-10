@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
@@ -15,9 +15,9 @@ import { useLibraryStore } from '@/store/library.store';
 
 import { Song } from '@/types/music';
 
+import { getPlaylistIcon } from '@/constants/playlist-icons';
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
-import { MaterialIcons } from '@expo/vector-icons';
 
 const descriptionMap: Record<string, string> = {
   'recently-added': 'Recently added to your device.',
@@ -45,8 +45,8 @@ export default function PlaylistScreen() {
   const songs = useMemo(() => {
     return playlist
       ? playlist.songIds
-          .map((songId) => allSongs.find((s) => s.id === songId))
-          .filter((song): song is Song => song !== undefined)
+        .map((songId) => allSongs.find((s) => s.id === songId))
+        .filter((song): song is Song => song !== undefined)
       : [];
   }, [playlist, allSongs]);
 
@@ -57,7 +57,7 @@ export default function PlaylistScreen() {
   if (!playlist && !loading) {
     return (
       <EmptyState
-        icon='queue-music'
+        icon='music'
         title='Playlist not found'
         description='This playlist could not be loaded.'
       />
@@ -75,7 +75,7 @@ export default function PlaylistScreen() {
         isEmpty={songs.length === 0}
         empty={
           <EmptyState
-            icon='queue-music'
+            icon='music'
             title='No songs'
             description='This playlist has no songs.'
           />
@@ -97,11 +97,10 @@ export default function PlaylistScreen() {
                     },
                   ]}
                 >
-                  <MaterialIcons
-                    name='queue-music'
-                    size={60}
-                    color={colors.primary}
-                  />
+                  {React.createElement(getPlaylistIcon(playlist.icon), {
+                    size: 60,
+                    color: colors.primary,
+                  })}
                 </View>
                 <AppText style={styles.title}>{playlist.name}</AppText>
 
@@ -118,9 +117,9 @@ export default function PlaylistScreen() {
             )
           }
           renderItem={({ item }) => (
-            <SongCard 
-              song={item} 
-              onPress={handleSongPress} 
+            <SongCard
+              song={item}
+              onPress={handleSongPress}
               onMorePress={openMenu}
             />
           )}

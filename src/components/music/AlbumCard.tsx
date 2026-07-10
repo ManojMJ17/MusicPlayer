@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { MoreVertical } from 'lucide-react-native';
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -52,7 +52,7 @@ function AlbumCardComponent({ album, onPress, onMorePress }: AlbumCardProps) {
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
+        <MoreVertical size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );

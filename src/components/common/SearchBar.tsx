@@ -1,7 +1,8 @@
+import { ArrowLeft, X } from 'lucide-react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 interface SearchBarProps {
   value: string;
@@ -29,7 +30,7 @@ export default function SearchBar({
       ]}
     >
       <Pressable onPress={onClose}>
-        <Ionicons name='arrow-back' size={24} color={colors.text} />
+        <ArrowLeft size={24} color={colors.text} />
       </Pressable>
 
       <TextInput
@@ -47,7 +48,7 @@ export default function SearchBar({
 
       {value.length > 0 && (
         <Pressable onPress={() => onChangeText('')}>
-          <Ionicons name='close' size={22} />
+          <X size={22} color={colors.textSecondary} />
         </Pressable>
       )}
     </View>

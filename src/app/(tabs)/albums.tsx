@@ -1,4 +1,4 @@
-import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -9,6 +9,7 @@ import { AlbumCard } from '@/components/music/AlbumCard';
 import { Theme } from '@/constants/theme';
 import { useAlbums } from '@/hooks/useAlbums';
 import { useSearch } from '@/hooks/useSearch';
+import { useAlbumActions } from '@/hooks/useSongActions';
 import { Album } from '@/types/music';
 import { router } from 'expo-router';
 import { Search } from 'lucide-react-native';
@@ -18,6 +19,7 @@ export default function AlbumsScreen() {
   const [isSearching, setIsSearching] = useState(false);
 
   const { albums, loading, error, refresh } = useAlbums();
+  const { openMenu, renderActionSheets } = useAlbumActions();
 
   const { query, setQuery, clearQuery, filteredItems } = useSearch(
     albums,
@@ -34,8 +36,7 @@ export default function AlbumsScreen() {
   };
 
   const handleMorePress = (album: Album) => {
-    // Bottom sheet will be implemented later.
-    Alert.alert('Options', album.title);
+    openMenu(album);
   };
 
   return (
@@ -88,6 +89,7 @@ export default function AlbumsScreen() {
           showsVerticalScrollIndicator={false}
         />
       </DataState>
+      {renderActionSheets()}
     </PageLayout>
   );
 }

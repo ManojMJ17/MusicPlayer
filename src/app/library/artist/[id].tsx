@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
+import { Mic } from 'lucide-react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -17,7 +18,6 @@ import { Song } from '@/types/music';
 
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
-import { MaterialIcons } from '@expo/vector-icons';
 
 export default function ArtistScreen() {
   const { colors } = useTheme();
@@ -86,7 +86,7 @@ export default function ArtistScreen() {
                     },
                   ]}
                 >
-                  <MaterialIcons name='mic' size={60} color={colors.primary} />
+                  <Mic size={60} color={colors.primary} />
                 </View>
 
                 <AppText style={styles.title}>{artist.name}</AppText>

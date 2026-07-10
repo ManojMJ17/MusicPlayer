@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Check, Music, Play, Pause } from 'lucide-react-native';
 import { Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
@@ -116,10 +116,10 @@ export function ThemePicker({ visible, onClose }: ThemePickerProps) {
                       ]}
                     >
                       {selected && (
-                        <MaterialIcons
-                          name='check'
+                        <Check
                           size={14}
                           color={theme.colors.background}
+                          strokeWidth={3}
                         />
                       )}
                     </View>
@@ -142,8 +142,7 @@ export function ThemePicker({ visible, onClose }: ThemePickerProps) {
                         { backgroundColor: theme.colors.surfaceVariant }
                       ]}
                     >
-                      <MaterialIcons
-                        name='music-note'
+                      <Music
                         size={16}
                         color={theme.colors.primary}
                       />
@@ -179,11 +178,19 @@ export function ThemePicker({ visible, onClose }: ThemePickerProps) {
 
                     {/* Mini Play Button */}
                     <View style={styles.miniControls}>
-                      <MaterialIcons
-                        name={selected ? 'pause' : 'play-arrow'}
-                        size={18}
-                        color={theme.colors.primary}
-                      />
+                      {selected ? (
+                        <Pause
+                          size={18}
+                          color={theme.colors.primary}
+                          fill={theme.colors.primary}
+                        />
+                      ) : (
+                        <Play
+                          size={18}
+                          color={theme.colors.primary}
+                          fill={theme.colors.primary}
+                        />
+                      )}
                     </View>
                   </View>
                 </TouchableOpacity>

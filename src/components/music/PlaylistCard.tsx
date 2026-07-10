@@ -1,9 +1,10 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { memo } from 'react';
+import { MoreVertical } from 'lucide-react-native';
+import React, { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
+import { getPlaylistIcon } from '@/constants/playlist-icons';
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
 import { Playlist } from '@/types/music';
@@ -35,7 +36,10 @@ function PlaylistCardComponent({
           },
         ]}
       >
-        <MaterialIcons name='queue-music' size={32} color={colors.primary} />
+        {React.createElement(getPlaylistIcon(playlist.icon), {
+          size: 32,
+          color: colors.primary,
+        })}
       </View>
 
       <View style={styles.info}>
@@ -62,7 +66,7 @@ function PlaylistCardComponent({
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
+        <MoreVertical size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );

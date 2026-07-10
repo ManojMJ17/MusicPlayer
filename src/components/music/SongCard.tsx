@@ -1,4 +1,4 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Heart, MoreVertical } from 'lucide-react-native';
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -46,10 +46,10 @@ function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
         }}
         style={styles.favoriteButton}
       >
-        <Ionicons
-          name={song.isFavorite ? 'heart' : 'heart-outline'}
+        <Heart
           size={22}
           color={song.isFavorite ? '#ff453a' : colors.icon}
+          fill={song.isFavorite ? '#ff453a' : 'transparent'}
         />
       </Pressable>
 
@@ -63,7 +63,7 @@ function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
+        <MoreVertical size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );

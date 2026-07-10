@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -102,19 +102,19 @@ export function MiniPlayer() {
       </View>
 
       <Pressable onPress={previous} style={styles.iconButton}>
-        <Ionicons name='play-skip-back' size={22} color={colors.text} />
+        <SkipBack size={22} color={colors.text} fill={colors.text} />
       </Pressable>
 
       <Pressable onPress={handlePlayPause} style={styles.iconButton}>
-        <Ionicons
-          name={isPlaying ? 'pause' : 'play'}
-          size={24}
-          color={colors.text}
-        />
+        {isPlaying ? (
+          <Pause size={24} color={colors.text} fill={colors.text} />
+        ) : (
+          <Play size={24} color={colors.text} fill={colors.text} />
+        )}
       </Pressable>
 
       <Pressable onPress={next} style={styles.iconButton}>
-        <Ionicons name='play-skip-forward' size={22} color={colors.text} />
+        <SkipForward size={22} color={colors.text} fill={colors.text} />
       </Pressable>
     </Pressable>
   );

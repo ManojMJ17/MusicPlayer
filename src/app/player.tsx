@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { ChevronDown } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 
@@ -17,7 +17,7 @@ export default function PlayerScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
     >
       <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name='chevron-down' size={28} color={colors.text} />
+        <ChevronDown size={28} color={colors.text} />
       </Pressable>
 
       <PlayerArtwork />

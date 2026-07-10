@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
+import { Disc } from 'lucide-react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -17,7 +18,6 @@ import { Song } from '@/types/music';
 
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
-import { MaterialIcons } from '@expo/vector-icons';
 
 export default function AlbumScreen() {
   const { colors } = useTheme();
@@ -80,7 +80,7 @@ export default function AlbumScreen() {
                   },
                 ]}
               >
-                <MaterialIcons name='album' size={60} color={colors.primary} />
+                <Disc size={60} color={colors.primary} />
               </View>
               <AppText style={styles.title}>{album}</AppText>
               <AppText variant='body' color={colors.textSecondary}>

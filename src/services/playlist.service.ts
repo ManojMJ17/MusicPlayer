@@ -22,11 +22,12 @@ class CustomPlaylistService {
     }
   }
 
-  async create(name: string): Promise<Playlist> {
+  async create(name: string, icon?: string): Promise<Playlist> {
     const playlists = await this.getAll();
     const newPlaylist: Playlist = {
       id: `custom-${Date.now()}`,
       name,
+      icon: icon || 'music',
       artwork: null,
       songIds: [],
       createdAt: new Date().toISOString(),
@@ -62,6 +63,20 @@ class CustomPlaylistService {
     if (!playlist) return null;
 
     playlist.songIds = playlist.songIds.filter((id) => id !== songId);
+    playlist.updatedAt = new Date().toISOString();
+    await this.saveAll(playlists);
+    return playlist;
+  }
+
+  async edit(playlistId: string, newName: string, newIcon?: string): Promise<Playlist | null> {
+    const playlists = await this.getAll();
+    const playlist = playlists.find((p) => p.id === playlistId);
+    if (!playlist) return null;
+
+    playlist.name = newName;
+    if (newIcon) {
+      playlist.icon = newIcon;
+    }
     playlist.updatedAt = new Date().toISOString();
     await this.saveAll(playlists);
     return playlist;
