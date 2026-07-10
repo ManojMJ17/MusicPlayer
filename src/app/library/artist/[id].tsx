@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
@@ -9,6 +10,7 @@ import { SongCard } from '@/components/music/SongCard';
 import { AppText } from '@/components/ui/AppText';
 
 import { usePlayer } from '@/hooks/usePlayer';
+import { useSongActions } from '@/hooks/useSongActions';
 import { useLibraryStore } from '@/store/library.store';
 
 import { Song } from '@/types/music';
@@ -22,6 +24,7 @@ export default function ArtistScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const { play } = usePlayer();
+  const { openMenu, renderActionSheets } = useSongActions();
 
   const artist = useLibraryStore((state) =>
     state.artists.find((a) => a.id === id)
@@ -37,9 +40,9 @@ export default function ArtistScreen() {
     )
     .sort((a, b) => a.title.localeCompare(b.title));
 
-  const handleSongPress = async (song: Song) => {
+  const handleSongPress = useCallback(async (song: Song) => {
     await play(song, songs);
-  };
+  }, [play, songs]);
 
   if (!artist && !loading) {
     return (
@@ -100,13 +103,22 @@ export default function ArtistScreen() {
             )
           }
           renderItem={({ item }) => (
-            <SongCard song={item} onPress={handleSongPress} />
+            <SongCard
+              song={item}
+              onPress={handleSongPress}
+              onMorePress={openMenu}
+            />
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          initialNumToRender={12}
         />
       </DataState>
+      {renderActionSheets()}
     </PageLayout>
   );
 }

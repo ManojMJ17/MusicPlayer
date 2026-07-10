@@ -9,13 +9,21 @@ export interface SongMetadata {
 }
 
 class LibraryMetadataService {
+    private cache: Record<string, SongMetadata> | null = null;
+
     private async getAll(): Promise<Record<string, SongMetadata>> {
+        if (this.cache !== null) {
+            return this.cache;
+        }
         const json = await AsyncStorage.getItem(STORAGE_KEY);
 
-        return json ? JSON.parse(json) : {};
+        const data = json ? JSON.parse(json) : {};
+        this.cache = data;
+        return data;
     }
 
     private async saveAll(data: Record<string, SongMetadata>) {
+        this.cache = data;
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 

@@ -26,6 +26,8 @@ interface PlayerStore extends PlayerState {
   cycleRepeatMode: () => void;
 
   setQueue: (songs: Song[], startIndex?: number) => void;
+
+  addToQueueNext: (song: Song) => void;
 }
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -79,5 +81,37 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   setQueue(songs, startIndex = 0) {
     set(playerService.setQueue(get(), songs, startIndex));
+  },
+
+  addToQueueNext(song) {
+    const state = get();
+    const { songs, currentIndex } = state.queue;
+
+    // If queue is empty or no song is loaded, play it immediately as a new queue
+    if (songs.length === 0 || currentIndex === -1 || !state.currentSong) {
+      set(playerService.setQueue(state, [song], 0));
+      return;
+    }
+
+    // If the song is already the next item in the queue, do nothing
+    const nextIndex = currentIndex + 1;
+    if (songs[nextIndex] && songs[nextIndex].id === song.id) {
+      return;
+    }
+
+    // Filter out duplicate instances of this song elsewhere in the queue
+    // (excluding the current song itself, just in case)
+    const filteredSongs = songs.filter((s, idx) => s.id !== song.id || idx === currentIndex);
+    const newCurrentIndex = filteredSongs.findIndex((s) => s.id === state.currentSong?.id);
+
+    const updatedSongs = [...filteredSongs];
+    updatedSongs.splice(newCurrentIndex + 1, 0, song);
+
+    set({
+      queue: {
+        songs: updatedSongs,
+        currentIndex: newCurrentIndex,
+      },
+    });
   },
 }));

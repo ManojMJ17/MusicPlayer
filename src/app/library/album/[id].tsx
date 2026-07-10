@@ -1,67 +1,58 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { PageLayout } from '@/components/common/PageLayout';
-import { AlbumArtwork } from '@/components/music/AlbumArtwork';
 import { SongCard } from '@/components/music/SongCard';
 
 import { AppText } from '@/components/ui/AppText';
 
 import { usePlayer } from '@/hooks/usePlayer';
+import { useSongActions } from '@/hooks/useSongActions';
 import { useLibraryStore } from '@/store/library.store';
 
 import { Song } from '@/types/music';
 
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function AlbumScreen() {
+  const { colors } = useTheme();
+
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const { play } = usePlayer();
-  const { colors } = useTheme();
+  const { openMenu, renderActionSheets } = useSongActions();
 
-  const album = useLibraryStore((state) =>
-    state.albums.find((a) => a.id === id)
+  const songs = useLibraryStore((state) => state.songs).filter(
+    (song) => song.album.trim().toLowerCase() === id?.trim().toLowerCase()
   );
 
-  const allSongs = useLibraryStore((state) => state.songs);
+  const album = songs[0]?.album ?? 'Album';
+  const artist = songs[0]?.artist ?? 'Artist';
+
+  const handleSongPress = useCallback(async (song: Song) => {
+    await play(song, songs);
+  }, [play, songs]);
+
   const loading = useLibraryStore((state) => state.loading);
   const error = useLibraryStore((state) => state.error);
 
-  const songs = allSongs
-    .filter(
-      (song) => song.album.trim().toLowerCase() === id?.trim().toLowerCase()
-    )
-    .sort((a, b) => {
-      if (a.trackNumber != null && b.trackNumber != null) {
-        return a.trackNumber - b.trackNumber;
-      }
-
-      return a.title.localeCompare(b.title);
-    });
-
-  const handleSongPress = async (song: Song) => {
-    await play(song, songs);
-  };
-
-  if (!album && !loading) {
+  if (songs.length === 0 && !loading) {
     return (
       <EmptyState
         icon='album'
         title='Album not found'
-        description='This album could not be loaded.'
+        description='This album has no songs.'
       />
     );
   }
 
   return (
-    <PageLayout
-      title={album?.title ?? 'Album'}
-      subtitle={`${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`}
-    >
+    <PageLayout title={album} subtitle={`${songs.length} songs`}>
       <DataState
         loading={loading}
         error={error}
@@ -78,34 +69,45 @@ export default function AlbumScreen() {
           data={songs}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
-            album && (
-              <View style={styles.header}>
-                <AlbumArtwork
-                  songId={album.coverSongId}
-                  title={album.title}
-                  size='xl'
-                />
-
-                <AppText style={styles.title}>{album.title}</AppText>
-
-                <AppText variant='body' color={colors.textSecondary}>
-                  {album.artist}
-                </AppText>
-
-                <AppText variant='caption' color={colors.textSecondary}>
-                  {album.year ?? 'Unknown Year'} • {album.songCount} songs
-                </AppText>
+            <View style={styles.header}>
+              <View
+                style={[
+                  styles.cover,
+                  {
+                    backgroundColor: colors.surfaceVariant,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                  },
+                ]}
+              >
+                <MaterialIcons name='album' size={60} color={colors.primary} />
               </View>
-            )
+              <AppText style={styles.title}>{album}</AppText>
+              <AppText variant='body' color={colors.textSecondary}>
+                {artist}
+              </AppText>
+              <AppText variant='caption' color={colors.textSecondary}>
+                {songs.length} {songs.length === 1 ? 'song' : 'songs'}
+              </AppText>
+            </View>
           }
           renderItem={({ item }) => (
-            <SongCard song={item} onPress={handleSongPress} />
+            <SongCard
+              song={item}
+              onPress={handleSongPress}
+              onMorePress={openMenu}
+            />
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          initialNumToRender={12}
         />
       </DataState>
+      {renderActionSheets()}
     </PageLayout>
   );
 }
@@ -114,6 +116,14 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: Theme.spacing['2xl'],
+  },
+
+  cover: {
+    width: 200,
+    height: 200,
+    borderRadius: Theme.radius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   title: {

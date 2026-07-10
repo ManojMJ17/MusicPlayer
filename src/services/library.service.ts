@@ -2,14 +2,25 @@ import { mediaService } from '@/services/media.service';
 import { Album, Artist, Playlist, Song } from '@/types/music';
 import { libraryCacheService } from './libraryCache.service';
 import { libraryMetadataService } from './libraryMetadataService';
+import { customPlaylistService } from './playlist.service';
 
 class LibraryService {
+  private memorySongs: Song[] | null = null;
+
+  setMemorySongs(songs: Song[]) {
+    this.memorySongs = songs;
+  }
+
   async getSongs(forceRefresh = false): Promise<Song[]> {
+    if (!forceRefresh && this.memorySongs) {
+      return this.memorySongs;
+    }
+
     if (!forceRefresh) {
       const cachedSongs = await libraryCacheService.get();
 
       if (cachedSongs) {
-        return Promise.all(
+        const songs = await Promise.all(
           cachedSongs.map(async (song) => {
             const metadata = await libraryMetadataService.get(song.id);
 
@@ -21,6 +32,8 @@ class LibraryService {
             };
           }),
         );
+        this.memorySongs = songs;
+        return songs;
       }
     }
 
@@ -33,7 +46,7 @@ class LibraryService {
 
     await libraryCacheService.set(cacheSongs);
 
-    return Promise.all(
+    const mergedSongs = await Promise.all(
       songs.map(async (song) => {
         const metadata = await libraryMetadataService.get(song.id);
 
@@ -45,6 +58,8 @@ class LibraryService {
         };
       }),
     );
+    this.memorySongs = mergedSongs;
+    return mergedSongs;
   }
 
   buildAlbums(songs: Song[]): Album[] {
@@ -188,9 +203,12 @@ class LibraryService {
   }
 
   async getPlaylist(id: string): Promise<Playlist | null> {
-    const playlists = this.buildPlaylists(await this.getSongs());
+    const smartPlaylists = this.buildPlaylists(await this.getSongs());
+    const matched = smartPlaylists.find((p) => p.id === id);
+    if (matched) return matched;
 
-    return playlists.find((playlist) => playlist.id === id) ?? null;
+    const customPlaylists = await customPlaylistService.getAll();
+    return customPlaylists.find((p) => p.id === id) ?? null;
   }
 
   async getPlaylistSongs(id: string): Promise<Song[]> {

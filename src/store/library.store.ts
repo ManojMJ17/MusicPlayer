@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import { libraryService } from '@/services/library.service';
 import { libraryMetadataService } from '@/services/libraryMetadataService';
+import { customPlaylistService } from '@/services/playlist.service';
 import { Album, Artist, Playlist, Song } from '@/types/music';
 import { usePlayerStore } from './player.store';
 
@@ -19,6 +20,9 @@ interface LibraryState {
   refreshLibrary: () => Promise<void>;
   toggleFavorite: (songId: string) => Promise<void>;
   incrementPlay: (songId: string) => Promise<void>;
+  createPlaylist: (name: string) => Promise<Playlist>;
+  addSongToPlaylist: (playlistId: string, songId: string) => Promise<void>;
+  removeSongFromPlaylist: (playlistId: string, songId: string) => Promise<void>;
 }
 
 export const useLibraryStore = create<LibraryState>((set, get) => ({
@@ -43,13 +47,14 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
 
       const artists = libraryService.buildArtists(songs);
 
-      const playlists = libraryService.buildPlaylists(songs);
+      const smartPlaylists = libraryService.buildPlaylists(songs);
+      const customPlaylists = await customPlaylistService.getAll();
 
       set({
         songs,
         albums,
         artists,
-        playlists,
+        playlists: [...smartPlaylists, ...customPlaylists],
         loading: false,
         hasLoaded: true,
       });
@@ -76,13 +81,14 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
 
       const artists = libraryService.buildArtists(songs);
 
-      const playlists = libraryService.buildPlaylists(songs);
+      const smartPlaylists = libraryService.buildPlaylists(songs);
+      const customPlaylists = await customPlaylistService.getAll();
 
       set({
         songs,
         albums,
         artists,
-        playlists,
+        playlists: [...smartPlaylists, ...customPlaylists],
         loading: false,
         hasLoaded: true,
       });
@@ -106,13 +112,16 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
 
       const albums = libraryService.buildAlbums(updatedSongs);
       const artists = libraryService.buildArtists(updatedSongs);
-      const playlists = libraryService.buildPlaylists(updatedSongs);
+      const smartPlaylists = libraryService.buildPlaylists(updatedSongs);
+      const customPlaylists = await customPlaylistService.getAll();
+
+      libraryService.setMemorySongs(updatedSongs);
 
       set({
         songs: updatedSongs,
         albums,
         artists,
-        playlists,
+        playlists: [...smartPlaylists, ...customPlaylists],
       });
 
       // Synchronize player store if the active song is modified
@@ -158,13 +167,16 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
 
       const albums = libraryService.buildAlbums(updatedSongs);
       const artists = libraryService.buildArtists(updatedSongs);
-      const playlists = libraryService.buildPlaylists(updatedSongs);
+      const smartPlaylists = libraryService.buildPlaylists(updatedSongs);
+      const customPlaylists = await customPlaylistService.getAll();
+
+      libraryService.setMemorySongs(updatedSongs);
 
       set({
         songs: updatedSongs,
         albums,
         artists,
-        playlists,
+        playlists: [...smartPlaylists, ...customPlaylists],
       });
 
       // Sync active playing song details in PlayerStore
@@ -181,5 +193,43 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
     } catch (error) {
       console.error('Failed to increment play count:', error);
     }
+  },
+
+  createPlaylist: async (name: string) => {
+    const newPlaylist = await customPlaylistService.create(name);
+
+    const { songs } = get();
+    const smartPlaylists = libraryService.buildPlaylists(songs);
+    const customPlaylists = await customPlaylistService.getAll();
+
+    set({
+      playlists: [...smartPlaylists, ...customPlaylists],
+    });
+
+    return newPlaylist;
+  },
+
+  addSongToPlaylist: async (playlistId: string, songId: string) => {
+    await customPlaylistService.addSong(playlistId, songId);
+
+    const { songs } = get();
+    const smartPlaylists = libraryService.buildPlaylists(songs);
+    const customPlaylists = await customPlaylistService.getAll();
+
+    set({
+      playlists: [...smartPlaylists, ...customPlaylists],
+    });
+  },
+
+  removeSongFromPlaylist: async (playlistId: string, songId: string) => {
+    await customPlaylistService.removeSong(playlistId, songId);
+
+    const { songs } = get();
+    const smartPlaylists = libraryService.buildPlaylists(songs);
+    const customPlaylists = await customPlaylistService.getAll();
+
+    set({
+      playlists: [...smartPlaylists, ...customPlaylists],
+    });
   },
 }));

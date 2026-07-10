@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useCallback, useMemo } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
@@ -9,6 +10,7 @@ import { SongCard } from '@/components/music/SongCard';
 import { AppText } from '@/components/ui/AppText';
 
 import { usePlayer } from '@/hooks/usePlayer';
+import { useSongActions } from '@/hooks/useSongActions';
 import { useLibraryStore } from '@/store/library.store';
 
 import { Song } from '@/types/music';
@@ -30,6 +32,7 @@ export default function PlaylistScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const { play } = usePlayer();
+  const { openMenu, renderActionSheets } = useSongActions(id);
 
   const playlist = useLibraryStore((state) =>
     state.playlists.find((p) => p.id === id)
@@ -39,15 +42,17 @@ export default function PlaylistScreen() {
   const loading = useLibraryStore((state) => state.loading);
   const error = useLibraryStore((state) => state.error);
 
-  const songs = playlist
-    ? playlist.songIds
-        .map((songId) => allSongs.find((s) => s.id === songId))
-        .filter((song): song is Song => song !== undefined)
-    : [];
+  const songs = useMemo(() => {
+    return playlist
+      ? playlist.songIds
+          .map((songId) => allSongs.find((s) => s.id === songId))
+          .filter((song): song is Song => song !== undefined)
+      : [];
+  }, [playlist, allSongs]);
 
-  const handleSongPress = async (song: Song) => {
+  const handleSongPress = useCallback(async (song: Song) => {
     await play(song, songs);
-  };
+  }, [play, songs]);
 
   if (!playlist && !loading) {
     return (
@@ -113,13 +118,22 @@ export default function PlaylistScreen() {
             )
           }
           renderItem={({ item }) => (
-            <SongCard song={item} onPress={handleSongPress} />
+            <SongCard 
+              song={item} 
+              onPress={handleSongPress} 
+              onMorePress={openMenu}
+            />
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          initialNumToRender={12}
         />
       </DataState>
+      {renderActionSheets()}
     </PageLayout>
   );
 }
