@@ -1,5 +1,4 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
@@ -11,9 +10,9 @@ import { SongCard } from '@/components/music/SongCard';
 import { AppText } from '@/components/ui/AppText';
 
 import { usePlayer } from '@/hooks/usePlayer';
-import { libraryService } from '@/services/library.service';
+import { useLibraryStore } from '@/store/library.store';
 
-import { Album, Song } from '@/types/music';
+import { Song } from '@/types/music';
 
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
@@ -21,39 +20,28 @@ import { useTheme } from '@/theme/useTheme';
 export default function AlbumScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // if (typeof id !== "string") {
-  //     return null;
-  // }
-
   const { play } = usePlayer();
-
-  const [album, setAlbum] = useState<Album | null>(null);
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const { colors } = useTheme();
 
-  useEffect(() => {
-    if (!id) return;
-    async function loadAlbum() {
-      try {
-        const [albumData, albumSongs] = await Promise.all([
-          libraryService.getAlbum(id),
-          libraryService.getAlbumSongs(id),
-        ]);
+  const album = useLibraryStore((state) =>
+    state.albums.find((a) => a.id === id)
+  );
 
-        setAlbum(albumData);
-        setSongs(albumSongs);
-      } catch {
-        setError('Failed to load album');
-      } finally {
-        setLoading(false);
+  const allSongs = useLibraryStore((state) => state.songs);
+  const loading = useLibraryStore((state) => state.loading);
+  const error = useLibraryStore((state) => state.error);
+
+  const songs = allSongs
+    .filter(
+      (song) => song.album.trim().toLowerCase() === id?.trim().toLowerCase()
+    )
+    .sort((a, b) => {
+      if (a.trackNumber != null && b.trackNumber != null) {
+        return a.trackNumber - b.trackNumber;
       }
-    }
 
-    loadAlbum();
-  }, [id]);
+      return a.title.localeCompare(b.title);
+    });
 
   const handleSongPress = async (song: Song) => {
     await play(song, songs);

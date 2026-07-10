@@ -1,5 +1,4 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
@@ -10,9 +9,9 @@ import { SongCard } from '@/components/music/SongCard';
 import { AppText } from '@/components/ui/AppText';
 
 import { usePlayer } from '@/hooks/usePlayer';
-import { libraryService } from '@/services/library.service';
+import { useLibraryStore } from '@/store/library.store';
 
-import { Playlist, Song } from '@/types/music';
+import { Song } from '@/types/music';
 
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
@@ -22,6 +21,7 @@ const descriptionMap: Record<string, string> = {
   'recently-added': 'Recently added to your device.',
   'recently-played': 'Your recently played songs.',
   'most-played': 'Your most played songs.',
+  'favorites': 'Your favorite songs.',
 };
 
 export default function PlaylistScreen() {
@@ -31,30 +31,19 @@ export default function PlaylistScreen() {
 
   const { play } = usePlayer();
 
-  const [playlist, setPlaylist] = useState<Playlist | null>(null);
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const playlist = useLibraryStore((state) =>
+    state.playlists.find((p) => p.id === id)
+  );
 
-  useEffect(() => {
-    async function loadPlaylist() {
-      try {
-        const [playlistData, playlistSongs] = await Promise.all([
-          libraryService.getPlaylist(id),
-          libraryService.getPlaylistSongs(id),
-        ]);
+  const allSongs = useLibraryStore((state) => state.songs);
+  const loading = useLibraryStore((state) => state.loading);
+  const error = useLibraryStore((state) => state.error);
 
-        setPlaylist(playlistData);
-        setSongs(playlistSongs);
-      } catch {
-        setError('Failed to load playlist');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadPlaylist();
-  }, [id]);
+  const songs = playlist
+    ? playlist.songIds
+        .map((songId) => allSongs.find((s) => s.id === songId))
+        .filter((song): song is Song => song !== undefined)
+    : [];
 
   const handleSongPress = async (song: Song) => {
     await play(song, songs);

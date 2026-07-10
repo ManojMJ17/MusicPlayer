@@ -1,5 +1,4 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { DataState } from '@/components/common/DataState';
@@ -10,9 +9,9 @@ import { SongCard } from '@/components/music/SongCard';
 import { AppText } from '@/components/ui/AppText';
 
 import { usePlayer } from '@/hooks/usePlayer';
-import { libraryService } from '@/services/library.service';
+import { useLibraryStore } from '@/store/library.store';
 
-import { Artist, Song } from '@/types/music';
+import { Song } from '@/types/music';
 
 import { Theme } from '@/constants/theme';
 import { useTheme } from '@/theme/useTheme';
@@ -24,30 +23,19 @@ export default function ArtistScreen() {
 
   const { play } = usePlayer();
 
-  const [artist, setArtist] = useState<Artist | null>(null);
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const artist = useLibraryStore((state) =>
+    state.artists.find((a) => a.id === id)
+  );
 
-  useEffect(() => {
-    async function loadArtist() {
-      try {
-        const [artistData, artistSongs] = await Promise.all([
-          libraryService.getArtist(id),
-          libraryService.getArtistSongs(id),
-        ]);
+  const allSongs = useLibraryStore((state) => state.songs);
+  const loading = useLibraryStore((state) => state.loading);
+  const error = useLibraryStore((state) => state.error);
 
-        setArtist(artistData);
-        setSongs(artistSongs);
-      } catch {
-        setError('Failed to load artist');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadArtist();
-  }, [id]);
+  const songs = allSongs
+    .filter(
+      (song) => song.artist.trim().toLowerCase() === id?.trim().toLowerCase()
+    )
+    .sort((a, b) => a.title.localeCompare(b.title));
 
   const handleSongPress = async (song: Song) => {
     await play(song, songs);

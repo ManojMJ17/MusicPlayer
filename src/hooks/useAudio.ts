@@ -1,7 +1,7 @@
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { useEffect, useRef } from 'react';
 
-import { libraryMetadataService } from '@/services/libraryMetadataService';
+import { useLibraryStore } from '@/store/library.store';
 import { usePlayerStore } from '@/store/player.store';
 
 /**
@@ -53,7 +53,7 @@ export function useAudio() {
 
     loadedSongId.current = currentSong.id;
 
-    libraryMetadataService.incrementPlay(currentSong.id);
+    useLibraryStore.getState().incrementPlay(currentSong.id);
 
     player.replace({ uri: rawUri });
     // The isPlaying effect below will call player.play() after replace.

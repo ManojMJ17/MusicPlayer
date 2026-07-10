@@ -1,10 +1,11 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
 import { Theme } from '@/constants/theme';
+import { useLibraryStore } from '@/store/library.store';
 import { useTheme } from '@/theme/useTheme';
 import { Song } from '@/types/music';
 
@@ -16,6 +17,8 @@ interface SongCardProps {
 
 function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
   const { colors } = useTheme();
+
+  const toggleFavorite = useLibraryStore((state) => state.toggleFavorite);
 
   return (
     <AppCard onPress={() => onPress(song)} contentStyle={styles.content}>
@@ -32,6 +35,23 @@ function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
           {song.artist} - {song.album}
         </AppText>
       </View>
+
+      <Pressable
+        hitSlop={10}
+        onPress={() => toggleFavorite(song.id)}
+        android_ripple={{
+          color: 'rgba(255,255,255,0.08)',
+          borderless: true,
+          radius: 20,
+        }}
+        style={styles.favoriteButton}
+      >
+        <Ionicons
+          name={song.isFavorite ? 'heart' : 'heart-outline'}
+          size={22}
+          color={song.isFavorite ? '#ff453a' : colors.icon}
+        />
+      </Pressable>
 
       <Pressable
         hitSlop={10}
@@ -65,6 +85,14 @@ const styles = StyleSheet.create({
 
   title: {
     marginBottom: 2,
+  },
+
+  favoriteButton: {
+    width: 40,
+    height: 40,
+    borderRadius: Theme.radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   moreButton: {

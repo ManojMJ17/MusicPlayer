@@ -48,6 +48,24 @@ class LibraryMetadataService {
 
         await this.saveAll(data);
     }
+
+    async toggleFavorite(songId: string): Promise<boolean> {
+        const data = await this.getAll();
+
+        const metadata =
+            data[songId] ?? {
+                playCount: 0,
+                lastPlayedAt: null,
+                isFavorite: false,
+            };
+
+        metadata.isFavorite = !metadata.isFavorite;
+
+        data[songId] = metadata;
+
+        await this.saveAll(data);
+        return metadata.isFavorite;
+    }
 }
 
 export const libraryMetadataService = new LibraryMetadataService();
