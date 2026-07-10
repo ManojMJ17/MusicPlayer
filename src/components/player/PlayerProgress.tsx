@@ -1,9 +1,10 @@
 import Slider from '@react-native-community/slider';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
+import { useTheme } from '@/theme/useTheme';
 
 function formatTime(seconds: number): string {
   const totalSeconds = Math.floor(seconds);
@@ -16,24 +17,43 @@ function formatTime(seconds: number): string {
 
 export function PlayerProgress() {
   const { progress, seekTo } = usePlayer();
+  const { colors } = useTheme();
+
+  const [sliding, setSliding] = useState(false);
+  const [slidingValue, setSlidingValue] = useState(0);
+
+  const displayValue = sliding ? slidingValue : progress.position;
 
   return (
     <View style={styles.container}>
       <Slider
         minimumValue={0}
         maximumValue={progress.duration || 1}
-        value={progress.position}
-        minimumTrackTintColor={Colors.dark.primary}
-        maximumTrackTintColor={Colors.dark.border}
-        thumbTintColor={Colors.dark.primary}
-        onSlidingComplete={(value) => {
-          seekTo(value);
-        }} />
+        value={displayValue}
+        minimumTrackTintColor={colors.primary}
+        maximumTrackTintColor={colors.border}
+        thumbTintColor={colors.primary}
+        onSlidingStart={(value) => {
+          setSliding(true);
+          setSlidingValue(value);
+        }}
+        onValueChange={(value) => {
+          setSlidingValue(value);
+        }}
+        onSlidingComplete={async (value) => {
+          await seekTo(value);
+          setSliding(false);
+        }}
+      />
 
       <View style={styles.timeContainer}>
-        <Text style={styles.time}>{formatTime(progress.position)}</Text>
+        <Text style={[styles.time, { color: colors.textSecondary }]}>
+          {formatTime(displayValue)}
+        </Text>
 
-        <Text style={styles.time}>{formatTime(progress.duration)}</Text>
+        <Text style={[styles.time, { color: colors.textSecondary }]}>
+          {formatTime(progress.duration)}
+        </Text>
       </View>
     </View>
   );
@@ -53,7 +73,6 @@ const styles = StyleSheet.create({
   },
 
   time: {
-    color: Colors.dark.textSecondary,
     fontSize: 12,
   },
 });

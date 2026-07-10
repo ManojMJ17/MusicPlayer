@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
+import { useTheme } from '@/theme/useTheme';
 
 interface DataStateProps {
   loading: boolean;
@@ -25,6 +25,8 @@ export function DataState({
   loadingComponent,
   errorComponent,
 }: DataStateProps) {
+  const { colors } = useTheme();
+
   if (loading) {
     if (loadingComponent) {
       return <>{loadingComponent}</>;
@@ -32,7 +34,7 @@ export function DataState({
 
     return (
       <View style={styles.center}>
-        <ActivityIndicator size='large' color={Colors.dark.primary} />
+        <ActivityIndicator size='large' color={colors.primary} />
 
         <AppText style={styles.loadingText}>Loading...</AppText>
       </View>
@@ -50,7 +52,7 @@ export function DataState({
 
         <AppText
           variant='bodySmall'
-          color={Colors.dark.textSecondary}
+          color={colors.textSecondary}
           align='center'
         >
           {error}

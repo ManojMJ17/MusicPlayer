@@ -2,8 +2,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 interface EmptyStateProps {
   icon?: keyof typeof MaterialIcons.glyphMap;
@@ -18,14 +18,20 @@ export function EmptyState({
   description,
   style,
 }: EmptyStateProps) {
+  const { colors } = useTheme();
+
   return (
     <View style={[styles.container, style]}>
-      <View style={styles.iconContainer}>
-        <MaterialIcons
-          name={icon}
-          size={48}
-          color={Colors.dark.textSecondary}
-        />
+      <View
+        style={[
+          styles.iconContainer,
+          {
+            backgroundColor: colors.surfaceVariant,
+            borderColor: colors.border,
+          },
+        ]}
+      >
+        <MaterialIcons name={icon} size={48} color={colors.textSecondary} />
       </View>
 
       <AppText variant='title' align='center'>
@@ -35,7 +41,7 @@ export function EmptyState({
       {description ? (
         <AppText
           variant='bodySmall'
-          color={Colors.dark.textSecondary}
+          color={colors.textSecondary}
           align='center'
           style={styles.description}
         >
@@ -58,9 +64,8 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: Theme.radius.full,
-    backgroundColor: Colors.dark.surfaceVariant,
+
     borderWidth: 1,
-    borderColor: Colors.dark.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Theme.spacing.xl,

@@ -1,8 +1,8 @@
 import { LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 interface IconButtonProps {
   icon: LucideIcon;
@@ -15,13 +15,15 @@ export function IconButton({
   onPress,
   size = 22,
 }: IconButtonProps) {
+  const { colors } = useTheme();
+
   return (
     <Pressable
       onPress={onPress}
       hitSlop={8}
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
     >
-      <Icon size={size} color={Colors.dark.text} />
+      <Icon size={size} color={colors.text} />
     </Pressable>
   );
 }

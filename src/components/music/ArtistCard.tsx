@@ -4,8 +4,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import { Artist } from '@/types/music';
 
 interface ArtistCardProps {
@@ -19,10 +19,20 @@ function ArtistCardComponent({
   onPress,
   onMorePress,
 }: ArtistCardProps) {
+  const { colors } = useTheme();
+
   return (
     <AppCard onPress={() => onPress(artist)} contentStyle={styles.content}>
-      <View style={styles.avatar}>
-        <MaterialIcons name='mic' size={32} color={Colors.dark.primary} />
+      <View
+        style={[
+          styles.avatar,
+          {
+            backgroundColor: colors.surfaceVariant,
+            borderColor: colors.border,
+          },
+        ]}
+      >
+        <MaterialIcons name='mic' size={32} color={colors.primary} />
       </View>
 
       <View style={styles.info}>
@@ -30,7 +40,7 @@ function ArtistCardComponent({
           {artist.name}
         </AppText>
 
-        <AppText variant='bodySmall' color={Colors.dark.textSecondary}>
+        <AppText variant='bodySmall' color={colors.textSecondary}>
           {artist.albumCount} {artist.albumCount === 1 ? 'album' : 'albums'} •{' '}
           {artist.songCount} {artist.songCount === 1 ? 'song' : 'songs'}
         </AppText>
@@ -46,7 +56,7 @@ function ArtistCardComponent({
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={Colors.dark.icon} />
+        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );
@@ -65,9 +75,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: Theme.radius.full,
-    backgroundColor: Colors.dark.surfaceVariant,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
     alignItems: 'center',
     justifyContent: 'center',
   },

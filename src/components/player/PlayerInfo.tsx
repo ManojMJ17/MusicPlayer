@@ -1,27 +1,35 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
+import { useTheme } from '@/theme/useTheme';
 
 export function PlayerInfo() {
+  const { colors } = useTheme();
   const { currentSong } = usePlayer();
 
   if (!currentSong) {
     return null;
   }
 
+
   return (
     <View style={styles.container}>
-      <Text numberOfLines={1} style={styles.title}>
+      <Text numberOfLines={1} style={[styles.title, { color: colors.text }]}>
         {currentSong.title}
       </Text>
 
-      <Text numberOfLines={1} style={styles.artist}>
+      <Text
+        numberOfLines={1}
+        style={[styles.artist, { color: colors.textSecondary }]}
+      >
         {currentSong.artist}
       </Text>
 
-      <Text numberOfLines={1} style={styles.album}>
+      <Text
+        numberOfLines={1}
+        style={[styles.album, { color: colors.textSecondary }]}
+      >
         {currentSong.album}
       </Text>
     </View>
@@ -36,20 +44,17 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: Colors.dark.text,
     fontSize: 24,
     fontWeight: '700',
     textAlign: 'center',
   },
 
   artist: {
-    color: Colors.dark.textSecondary,
     fontSize: 16,
     marginTop: Theme.spacing.sm,
   },
 
   album: {
-    color: Colors.dark.textSecondary,
     fontSize: 14,
     marginTop: 4,
     opacity: 0.7,

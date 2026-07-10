@@ -1,22 +1,39 @@
-import { Colors } from '@/constants/colors';
-import { Theme } from '@/constants/theme';
 import { PropsWithChildren } from 'react';
 import { StatusBar, StyleSheet, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 interface ScreenProps extends PropsWithChildren {
   style?: ViewStyle;
 }
 
 export function Screen({ children, style }: ScreenProps) {
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar
-        barStyle='light-content'
-        backgroundColor={Colors.dark.background}
-      />
+  const { colors } = useTheme();
 
-      <View style={[styles.container, style]}>{children}</View>
+  return (
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: colors.background,
+        },
+      ]}
+    >
+      <StatusBar barStyle='light-content' backgroundColor={colors.background} />
+
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: colors.background,
+          },
+          style,
+        ]}
+      >
+        {children}
+      </View>
     </SafeAreaView>
   );
 }
@@ -24,12 +41,10 @@ export function Screen({ children, style }: ScreenProps) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.dark.background,
   },
 
   container: {
     flex: 1,
-    backgroundColor: Colors.dark.background,
     paddingHorizontal: Theme.spacing.lg,
   },
 });

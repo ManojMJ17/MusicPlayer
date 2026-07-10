@@ -6,15 +6,18 @@ import { PlayerArtwork } from '@/components/player/PlayerArtwork';
 import { PlayerControls } from '@/components/player/PlayerControls';
 import { PlayerInfo } from '@/components/player/PlayerInfo';
 import { PlayerProgress } from '@/components/player/PlayerProgress';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PlayerScreen() {
+  const { colors } = useTheme();
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name='chevron-down' size={28} color={Colors.dark.text} />
+        <Ionicons name='chevron-down' size={28} color={colors.text} />
       </Pressable>
 
       <PlayerArtwork />
@@ -31,7 +34,7 @@ export default function PlayerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.dark.background,
+
     paddingHorizontal: Theme.spacing.lg,
   },
 

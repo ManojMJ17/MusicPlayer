@@ -2,12 +2,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { AlbumArtwork } from './AlbumArtwork';
+
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import { Album } from '@/types/music';
-import { AlbumArtwork } from './AlbumArtwork';
 
 interface AlbumCardProps {
   album: Album;
@@ -16,6 +17,8 @@ interface AlbumCardProps {
 }
 
 function AlbumCardComponent({ album, onPress, onMorePress }: AlbumCardProps) {
+  const { colors } = useTheme();
+
   return (
     <AppCard onPress={() => onPress(album)} contentStyle={styles.content}>
       <AlbumArtwork songId={album.coverSongId} title={album.title} size='md' />
@@ -27,13 +30,13 @@ function AlbumCardComponent({ album, onPress, onMorePress }: AlbumCardProps) {
 
         <AppText
           variant='bodySmall'
-          color={Colors.dark.textSecondary}
+          color={colors.textSecondary}
           numberOfLines={1}
         >
           {album.artist}
         </AppText>
 
-        <AppText variant='caption' color={Colors.dark.textSecondary}>
+        <AppText variant='caption' color={colors.textSecondary}>
           {album.songCount} {album.songCount === 1 ? 'song' : 'songs'}
           {album.year ? ` • ${album.year}` : ''}
         </AppText>
@@ -49,7 +52,7 @@ function AlbumCardComponent({ album, onPress, onMorePress }: AlbumCardProps) {
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={Colors.dark.icon} />
+        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );

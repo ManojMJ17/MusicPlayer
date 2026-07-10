@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 export interface SettingsItemProps {
   title: string;
@@ -19,10 +19,14 @@ export function SettingsItem({
   icon,
   onPress,
 }: SettingsItemProps) {
+  const { colors } = useTheme();
+
   return (
     <AppCard onPress={onPress} contentStyle={styles.itemContent}>
-      <View style={styles.leading}>
-        <MaterialIcons name={icon} size={22} color={Colors.dark.primary} />
+      <View
+        style={[styles.leading, { backgroundColor: colors.surfaceVariant }]}
+      >
+        <MaterialIcons name={icon} size={22} color={colors.primary} />
       </View>
 
       <View style={styles.textContainer}>
@@ -31,7 +35,7 @@ export function SettingsItem({
         {subtitle ? (
           <AppText
             variant='caption'
-            color={Colors.dark.textSecondary}
+            color={colors.textSecondary}
             style={styles.subtitle}
           >
             {subtitle}
@@ -42,7 +46,7 @@ export function SettingsItem({
       <MaterialIcons
         name='chevron-right'
         size={22}
-        color={Colors.dark.textSecondary}
+        color={colors.textSecondary}
       />
     </AppCard>
   );
@@ -59,7 +63,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: Theme.radius.md,
-    backgroundColor: Colors.dark.surfaceVariant,
+
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -1,17 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
 import { artworkService } from '@/services/artwork.service';
-import { Image } from 'expo-image';
-import { useEffect, useState } from 'react';
+import { useTheme } from '@/theme/useTheme';
 
 const DEFAULT_ARTWORK = require('@/assets/images/default-album.png');
 
 export function MiniPlayer() {
+  const { colors } = useTheme();
+
   const { currentSong, isPlaying, pause, resume, next, previous } = usePlayer();
 
   const [artwork, setArtwork] = useState<string | null>(null);
@@ -53,38 +55,66 @@ export function MiniPlayer() {
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.container,
+        {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+        },
+        pressed && styles.pressed,
+      ]}
       onPress={() => router.push('/player')}
     >
       <Image
         source={artwork ? { uri: artwork } : DEFAULT_ARTWORK}
-        style={styles.artwork}
+        style={[
+          styles.artwork,
+          {
+            backgroundColor: colors.surfaceVariant,
+          },
+        ]}
       />
 
       <View style={styles.info}>
-        <Text numberOfLines={1} style={styles.title}>
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.title,
+            {
+              color: colors.text,
+            },
+          ]}
+        >
           {currentSong.title}
         </Text>
 
-        <Text numberOfLines={1} style={styles.artist}>
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.artist,
+            {
+              color: colors.textSecondary,
+            },
+          ]}
+        >
           {currentSong.artist}
         </Text>
       </View>
 
       <Pressable onPress={previous} style={styles.iconButton}>
-        <Ionicons name='play-skip-back' size={22} color={Colors.dark.text} />
+        <Ionicons name='play-skip-back' size={22} color={colors.text} />
       </Pressable>
 
       <Pressable onPress={handlePlayPause} style={styles.iconButton}>
         <Ionicons
           name={isPlaying ? 'pause' : 'play'}
           size={24}
-          color={Colors.dark.text}
+          color={colors.text}
         />
       </Pressable>
 
       <Pressable onPress={next} style={styles.iconButton}>
-        <Ionicons name='play-skip-forward' size={22} color={Colors.dark.text} />
+        <Ionicons name='play-skip-forward' size={22} color={colors.text} />
       </Pressable>
     </Pressable>
   );
@@ -97,7 +127,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
 
-    bottom: 64, // same height as your tab bar
+    bottom: 64,
 
     height: 72,
 
@@ -106,10 +136,7 @@ const styles = StyleSheet.create({
 
     paddingHorizontal: Theme.spacing.lg,
 
-    backgroundColor: Colors.dark.surface,
-
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.dark.border,
 
     zIndex: 999,
     elevation: 20,
@@ -124,7 +151,6 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 12,
     marginRight: Theme.spacing.md,
-    backgroundColor: Colors.dark.surfaceVariant,
   },
 
   info: {
@@ -132,13 +158,11 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: Colors.dark.text,
     fontSize: 15,
     fontWeight: '600',
   },
 
   artist: {
-    color: Colors.dark.textSecondary,
     fontSize: 13,
     marginTop: 2,
   },
@@ -146,7 +170,6 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 44,
     height: 44,
-
     justifyContent: 'center',
     alignItems: 'center',
   },

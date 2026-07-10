@@ -1,8 +1,8 @@
 import { Image, StyleSheet, View } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { artworkService } from '@/services/artwork.service';
+import { useTheme } from '@/theme/useTheme';
 import { useEffect, useState } from 'react';
 
 type ArtworkSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -27,6 +27,8 @@ export function AlbumArtwork({
   title,
   size = 'md',
 }: AlbumArtworkProps) {
+  const { colors } = useTheme();
+
   const dimension = SIZE_MAP[size];
   const [artwork, setArtwork] = useState<string | null>(null);
 
@@ -58,6 +60,7 @@ export function AlbumArtwork({
           width: dimension,
           height: dimension,
           borderRadius: Theme.radius.md,
+          backgroundColor: colors.surfaceVariant,
         },
       ]}
     >
@@ -76,7 +79,6 @@ export function AlbumArtwork({
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    backgroundColor: Colors.dark.surfaceVariant,
   },
 
   image: {

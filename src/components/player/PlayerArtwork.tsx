@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
 import { artworkService } from '@/services/artwork.service';
+import { useTheme } from '@/theme/useTheme';
 
 const DEFAULT_ARTWORK = require('@/assets/images/default-album.png');
 
 export function PlayerArtwork() {
+  const { colors } = useTheme();
+
   const { currentSong } = usePlayer();
 
   const [artwork, setArtwork] = useState<string | null>(null);
@@ -41,7 +43,12 @@ export function PlayerArtwork() {
       <Image
         source={artwork ? { uri: artwork } : DEFAULT_ARTWORK}
         resizeMode='cover'
-        style={styles.image}
+        style={[
+          styles.image,
+          {
+            backgroundColor: colors.surfaceVariant,
+          },
+        ]}
       />
     </View>
   );
@@ -58,6 +65,5 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     borderRadius: 24,
-    backgroundColor: Colors.dark.surfaceVariant,
   },
 });

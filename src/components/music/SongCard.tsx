@@ -4,8 +4,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import { Song } from '@/types/music';
 
 interface SongCardProps {
@@ -15,6 +15,8 @@ interface SongCardProps {
 }
 
 function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
+  const { colors } = useTheme();
+
   return (
     <AppCard onPress={() => onPress(song)} contentStyle={styles.content}>
       <View style={styles.info}>
@@ -24,7 +26,7 @@ function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
 
         <AppText
           variant='bodySmall'
-          color={Colors.dark.textSecondary}
+          color={colors.textSecondary}
           numberOfLines={1}
         >
           {song.artist} - {song.album}
@@ -41,7 +43,7 @@ function SongCardComponent({ song, onPress, onMorePress }: SongCardProps) {
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={Colors.dark.icon} />
+        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );

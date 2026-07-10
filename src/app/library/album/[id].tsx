@@ -15,8 +15,8 @@ import { libraryService } from '@/services/library.service';
 
 import { Album, Song } from '@/types/music';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 export default function AlbumScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,6 +31,8 @@ export default function AlbumScreen() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (!id) return;
@@ -98,11 +100,11 @@ export default function AlbumScreen() {
 
                 <AppText style={styles.title}>{album.title}</AppText>
 
-                <AppText variant='body' color={Colors.dark.textSecondary}>
+                <AppText variant='body' color={colors.textSecondary}>
                   {album.artist}
                 </AppText>
 
-                <AppText variant='caption' color={Colors.dark.textSecondary}>
+                <AppText variant='caption' color={colors.textSecondary}>
                   {album.year ?? 'Unknown Year'} • {album.songCount} songs
                 </AppText>
               </View>

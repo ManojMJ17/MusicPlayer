@@ -1,13 +1,14 @@
 import { MiniPlayer } from '@/components/music/MiniPlayer';
 import { useAudio } from '@/hooks/useAudio';
+import { useTheme } from '@/theme/useTheme';
 import { Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
-  // Mount the audio engine bridge for the entire app lifetime.
   useAudio();
+  const { colors } = useTheme();
 
   const pathname = usePathname();
 
@@ -25,23 +26,21 @@ export default function RootLayout() {
       <StatusBar style='light' />
 
       <View style={{ flex: 1 }}>
-        <Stack>
+        <Stack
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: colors.background,
+            },
+            headerTintColor: colors.text,
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            contentStyle: {
+              backgroundColor: colors.background,
+            },
+          }}
+        >
           <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-
-          <Stack.Screen
-            name='about'
-            options={{
-              headerShown: false,
-            }}
-          />
-
-          <Stack.Screen
-            name='library'
-            options={{
-              headerShown: false,
-            }}
-          />
-
           <Stack.Screen
             name='player'
             options={{
@@ -58,3 +57,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+

@@ -1,5 +1,5 @@
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
@@ -16,18 +16,31 @@ export default function SearchBar({
   onChangeText,
   onClose,
 }: SearchBarProps) {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          borderColor: colors.border, // or your outline color
+          backgroundColor: colors.surface,
+        },
+      ]}
+    >
       <Pressable onPress={onClose}>
-        <Ionicons name='arrow-back' size={24} color={Colors.dark.text} />
+        <Ionicons name='arrow-back' size={24} color={colors.text} />
       </Pressable>
 
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={Colors.dark.textSecondary}
-        style={[styles.input, { marginHorizontal: Theme.spacing.md }]}
+        placeholderTextColor={colors.textSecondary}
+        style={[
+          styles.input,
+          { marginHorizontal: Theme.spacing.md, color: colors.text },
+        ]}
         autoFocus
         returnKeyType='search'
       />
@@ -44,7 +57,6 @@ export default function SearchBar({
 const styles = StyleSheet.create({
   input: {
     flex: 1,
-    color: Colors.dark.text,
     fontSize: 16,
     paddingVertical: 0,
     paddingHorizontal: 2,
@@ -59,11 +71,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Theme.spacing.md,
 
     borderWidth: 1,
-    borderColor: Colors.dark.border, // or your outline color
 
     borderRadius: Theme.radius.lg,
-
-    backgroundColor: Colors.dark.surface,
 
     marginTop: 10,
     marginBottom: 10,

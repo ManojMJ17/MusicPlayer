@@ -14,152 +14,142 @@ import { libraryService } from '@/services/library.service';
 
 import { Artist, Song } from '@/types/music';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function ArtistScreen() {
-    const { id } = useLocalSearchParams<{ id: string }>();
+  const { colors } = useTheme();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
-    const { play } = usePlayer();
+  const { play } = usePlayer();
 
-    const [artist, setArtist] = useState<Artist | null>(null);
-    const [songs, setSongs] = useState<Song[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const [artist, setArtist] = useState<Artist | null>(null);
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        async function loadArtist() {
-            try {
-                const [artistData, artistSongs] = await Promise.all([
-                    libraryService.getArtist(id),
-                    libraryService.getArtistSongs(id),
-                ]);
+  useEffect(() => {
+    async function loadArtist() {
+      try {
+        const [artistData, artistSongs] = await Promise.all([
+          libraryService.getArtist(id),
+          libraryService.getArtistSongs(id),
+        ]);
 
-                setArtist(artistData);
-                setSongs(artistSongs);
-            } catch {
-                setError('Failed to load artist');
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadArtist();
-    }, [id]);
-
-    const handleSongPress = async (song: Song) => {
-        await play(song, songs);
-    };
-
-    if (!artist && !loading) {
-        return (
-            <EmptyState
-                icon="mic"
-                title="Artist not found"
-                description="This artist could not be loaded."
-            />
-        );
+        setArtist(artistData);
+        setSongs(artistSongs);
+      } catch {
+        setError('Failed to load artist');
+      } finally {
+        setLoading(false);
+      }
     }
 
+    loadArtist();
+  }, [id]);
+
+  const handleSongPress = async (song: Song) => {
+    await play(song, songs);
+  };
+
+  if (!artist && !loading) {
     return (
-        <PageLayout
-            title={artist?.name ?? 'Artist'}
-            subtitle={`${songs.length} ${songs.length === 1 ? 'song' : 'songs'
-                }`}
-        >
-            <DataState
-                loading={loading}
-                error={error}
-                isEmpty={songs.length === 0}
-                empty={
-                    <EmptyState
-                        icon="mic"
-                        title="No songs"
-                        description="This artist has no songs."
-                    />
-                }
-            >
-                <FlatList
-                    data={songs}
-                    keyExtractor={(item) => item.id}
-                    ListHeaderComponent={
-                        artist && (
-                            <View style={styles.header}>
-                                <View style={styles.avatar}>
-                                    <MaterialIcons
-                                        name="mic"
-                                        size={60}
-                                        color={Colors.dark.primary}
-                                    />
-                                </View>
-
-                                <AppText style={styles.title}>
-                                    {artist.name}
-                                </AppText>
-
-                                <AppText
-                                    variant="body"
-                                    color={Colors.dark.textSecondary}
-                                >
-                                    {artist.albumCount} Albums • {artist.songCount} Songs
-                                </AppText>
-
-                                <AppText
-                                    variant="caption"
-                                    color={Colors.dark.textSecondary}
-                                >
-                                    {artist.name} • {artist.albumCount} albums  {artist.songCount} songs
-                                </AppText>
-                            </View>
-                        )
-                    }
-                    renderItem={({ item }) => (
-                        <SongCard
-                            song={item}
-                            onPress={handleSongPress}
-                        />
-                    )}
-                    ItemSeparatorComponent={() => (
-                        <View style={styles.separator} />
-                    )}
-                    contentContainerStyle={styles.content}
-                    showsVerticalScrollIndicator={false}
-                />
-            </DataState>
-        </PageLayout>
+      <EmptyState
+        icon='mic'
+        title='Artist not found'
+        description='This artist could not be loaded.'
+      />
     );
+  }
+
+  return (
+    <PageLayout
+      title={artist?.name ?? 'Artist'}
+      subtitle={`${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`}
+    >
+      <DataState
+        loading={loading}
+        error={error}
+        isEmpty={songs.length === 0}
+        empty={
+          <EmptyState
+            icon='mic'
+            title='No songs'
+            description='This artist has no songs.'
+          />
+        }
+      >
+        <FlatList
+          data={songs}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={
+            artist && (
+              <View style={styles.header}>
+                <View
+                  style={[
+                    styles.avatar,
+                    {
+                      backgroundColor: colors.surfaceVariant,
+                      borderColor: colors.border,
+                    },
+                  ]}
+                >
+                  <MaterialIcons name='mic' size={60} color={colors.primary} />
+                </View>
+
+                <AppText style={styles.title}>{artist.name}</AppText>
+
+                <AppText variant='body' color={colors.textSecondary}>
+                  {artist.albumCount} Albums • {artist.songCount} Songs
+                </AppText>
+
+                <AppText variant='caption' color={colors.textSecondary}>
+                  {artist.name} • {artist.albumCount} albums {artist.songCount}{' '}
+                  songs
+                </AppText>
+              </View>
+            )
+          }
+          renderItem={({ item }) => (
+            <SongCard song={item} onPress={handleSongPress} />
+          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        />
+      </DataState>
+    </PageLayout>
+  );
 }
 
 const styles = StyleSheet.create({
-    header: {
-        alignItems: 'center',
-        marginBottom: Theme.spacing['2xl'],
-    },
+  header: {
+    alignItems: 'center',
+    marginBottom: Theme.spacing['2xl'],
+  },
 
-    title: {
-        marginTop: Theme.spacing.lg,
-    },
+  title: {
+    marginTop: Theme.spacing.lg,
+  },
 
-    separator: {
-        height: Theme.spacing.md,
-    },
+  separator: {
+    height: Theme.spacing.md,
+  },
 
-    content: {
-        paddingBottom: Theme.spacing['4xl'],
-    },
-    avatar: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
+  content: {
+    paddingBottom: Theme.spacing['4xl'],
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
 
-        backgroundColor: Colors.dark.surfaceVariant,
-        borderWidth: 1,
-        borderColor: Colors.dark.border,
+    borderWidth: 1,
 
-        justifyContent: 'center',
-        alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
 
-        marginBottom: Theme.spacing.lg,
-    },
+    marginBottom: Theme.spacing.lg,
+  },
 });

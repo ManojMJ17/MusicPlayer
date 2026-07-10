@@ -8,8 +8,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 interface AppCardProps extends PropsWithChildren {
   onPress?: PressableProps['onPress'];
@@ -25,12 +25,27 @@ export function AppCard({
   contentStyle,
   disabled = false,
 }: AppCardProps) {
+  const { colors } = useTheme();
+
   const content = (
     <View style={[styles.content, contentStyle]}>{children}</View>
   );
 
   if (!onPress) {
-    return <View style={[styles.card, style]}>{content}</View>;
+    return (
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+          style,
+        ]}
+      >
+        {content}
+      </View>
+    );
   }
 
   return (
@@ -43,6 +58,10 @@ export function AppCard({
       }}
       style={({ pressed }) => [
         styles.card,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
         pressed && styles.pressed,
         disabled && styles.disabled,
         style,
@@ -55,10 +74,8 @@ export function AppCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.dark.surface,
     borderRadius: Theme.radius.lg,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
     overflow: 'hidden',
   },
 

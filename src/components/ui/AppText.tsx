@@ -1,4 +1,3 @@
-import { Colors } from '@/constants/colors';
 import { PropsWithChildren } from 'react';
 import {
   StyleProp,
@@ -7,6 +6,8 @@ import {
   TextProps,
   TextStyle,
 } from 'react-native';
+
+import { useTheme } from '@/theme/useTheme';
 
 export type TextVariant =
   | 'display'
@@ -72,12 +73,14 @@ const variantStyles: Record<TextVariant, TextStyle> = {
 export function AppText({
   children,
   variant = 'body',
-  color = Colors.dark.text,
+  color,
   align = 'left',
   weight,
   style,
   ...rest
 }: AppTextProps) {
+  const { colors } = useTheme();
+
   return (
     <Text
       {...rest}
@@ -85,7 +88,7 @@ export function AppText({
         styles.base,
         variantStyles[variant],
         {
-          color,
+          color: color ?? colors.text,
           textAlign: align,
           fontWeight: weight ?? variantStyles[variant].fontWeight,
         },
@@ -99,7 +102,6 @@ export function AppText({
 
 const styles = StyleSheet.create({
   base: {
-    color: Colors.dark.text,
     includeFontPadding: false,
     textAlignVertical: 'center',
   },

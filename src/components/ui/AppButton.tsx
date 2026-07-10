@@ -1,7 +1,7 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 interface AppButtonProps {
   title: string;
@@ -17,7 +17,7 @@ export function AppButton({
   loading = false,
 }: AppButtonProps) {
   const isDisabled = disabled || loading;
-
+  const { colors } = useTheme();
   return (
     <Pressable
       onPress={onPress}
@@ -26,12 +26,13 @@ export function AppButton({
         styles.button,
         pressed && !isDisabled && styles.pressed,
         isDisabled && styles.disabled,
+        { backgroundColor: colors.primary },
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={Colors.dark.text} />
+        <ActivityIndicator color={colors.text} />
       ) : (
-        <Text style={styles.text}>{title}</Text>
+        <Text style={[styles.text, { color: colors.text }]}>{title}</Text>
       )}
     </Pressable>
   );
@@ -41,8 +42,6 @@ const styles = StyleSheet.create({
   button: {
     height: 52,
     borderRadius: Theme.radius.lg,
-
-    backgroundColor: Colors.dark.primary,
 
     alignItems: 'center',
     justifyContent: 'center',
@@ -57,8 +56,6 @@ const styles = StyleSheet.create({
   },
 
   text: {
-    color: Colors.dark.text,
-
     fontSize: 16,
     fontWeight: '600',
   },

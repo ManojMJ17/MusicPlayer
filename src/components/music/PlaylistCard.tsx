@@ -4,8 +4,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import { Playlist } from '@/types/music';
 
 interface PlaylistCardProps {
@@ -21,14 +21,21 @@ function PlaylistCardComponent({
 }: PlaylistCardProps) {
   const songCount = playlist.songIds.length;
 
+  const { colors } = useTheme();
+
   return (
     <AppCard onPress={() => onPress(playlist)} contentStyle={styles.content}>
-      <View style={styles.cover}>
-        <MaterialIcons
-          name='queue-music'
-          size={32}
-          color={Colors.dark.primary}
-        />
+      <View
+        style={[
+          styles.cover,
+          {
+            backgroundColor: colors.surfaceVariant,
+            borderColor: colors.border,
+            borderWidth: 1,
+          },
+        ]}
+      >
+        <MaterialIcons name='queue-music' size={32} color={colors.primary} />
       </View>
 
       <View style={styles.info}>
@@ -38,7 +45,7 @@ function PlaylistCardComponent({
 
         <AppText
           variant='bodySmall'
-          color={Colors.dark.textSecondary}
+          color={colors.textSecondary}
           numberOfLines={1}
         >
           {songCount} {songCount === 1 ? 'song' : 'songs'}
@@ -55,7 +62,7 @@ function PlaylistCardComponent({
         }}
         style={styles.moreButton}
       >
-        <MaterialIcons name='more-vert' size={22} color={Colors.dark.icon} />
+        <MaterialIcons name='more-vert' size={22} color={colors.icon} />
       </Pressable>
     </AppCard>
   );
@@ -74,9 +81,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: Theme.radius.md,
-    backgroundColor: Colors.dark.surfaceVariant,
-    borderWidth: 1,
-    borderColor: Colors.dark.border,
+
     alignItems: 'center',
     justifyContent: 'center',
   },

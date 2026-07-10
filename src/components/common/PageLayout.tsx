@@ -10,8 +10,8 @@ import {
 
 import { Screen } from '@/components/common/Screen';
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 
 interface PageLayoutProps extends PropsWithChildren {
   title: string;
@@ -44,6 +44,7 @@ export function PageLayout({
 
   contentStyle,
 }: PageLayoutProps) {
+  const { colors } = useTheme();
   const content = (
     <>
       {header ? (
@@ -56,7 +57,7 @@ export function PageLayout({
             {subtitle ? (
               <AppText
                 variant='bodySmall'
-                color={Colors.dark.textSecondary}
+                color={colors.textSecondary}
                 style={styles.subtitle}
               >
                 {subtitle}
@@ -83,7 +84,7 @@ export function PageLayout({
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor={Colors.dark.primary}
+                tintColor={colors.primary}
               />
             ) : undefined
           }

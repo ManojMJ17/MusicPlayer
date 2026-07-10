@@ -5,11 +5,20 @@ import { PageLayout } from '@/components/common/PageLayout';
 import { SettingsItem } from '@/components/settings/SettingsItem';
 import { Theme } from '@/constants/theme';
 import { useLibraryStore } from '@/store/library.store';
+import { useThemeStore } from '@/store/theme.store';
+import { ThemePicker } from '@/theme/ThemePicker';
+import { useTheme } from '@/theme/useTheme';
+import { useState } from 'react';
 
 export default function SettingsScreen() {
+  const [themePickerVisible, setThemePickerVisible] = useState(false);
+
   const refreshLibrary = useLibraryStore((state) => state.refreshLibrary);
   const loading = useLibraryStore((state) => state.loading);
 
+  const theme = useTheme();
+
+  const setTheme = useThemeStore((state) => state.setTheme);
   return (
     <PageLayout title='Settings' subtitle='Application preferences'>
       <View style={styles.container}>
@@ -28,14 +37,9 @@ export default function SettingsScreen() {
 
         <SettingsItem
           title='Theme'
-          subtitle='Dark mode'
-          icon='dark-mode'
-          onPress={() =>
-            Alert.alert(
-              'Coming Soon',
-              'Theme customization will be available later.',
-            )
-          }
+          subtitle={theme.displayName}
+          icon='palette'
+          onPress={() => setThemePickerVisible(true)}
         />
 
         <SettingsItem
@@ -54,6 +58,11 @@ export default function SettingsScreen() {
           onPress={() => router.push('/about')}
         />
       </View>
+
+      <ThemePicker
+        visible={themePickerVisible}
+        onClose={() => setThemePickerVisible(false)}
+      />
     </PageLayout>
   );
 }

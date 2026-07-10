@@ -1,17 +1,18 @@
 import { PageLayout } from '@/components/common/PageLayout';
 import { AppCard } from '@/components/ui/AppCard';
 import { AppText } from '@/components/ui/AppText';
-import { Colors } from '@/constants/colors';
 import { Theme } from '@/constants/theme';
+import { useTheme } from '@/theme/useTheme';
 import Constants from 'expo-constants';
 import { Image } from 'expo-image';
 import { Linking, StyleSheet, View } from 'react-native';
 function AboutRow({ label, value }: { label: string; value: string }) {
+  const { colors } = useTheme();
   return (
     <View style={styles.row}>
       <AppText variant='body'>{label}</AppText>
 
-      <AppText variant='body' color={Colors.dark.textSecondary}>
+      <AppText variant='body' color={colors.textSecondary}>
         {value}
       </AppText>
     </View>
@@ -19,6 +20,7 @@ function AboutRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function AboutScreen() {
+  const { colors } = useTheme();
   return (
     <PageLayout title='Music' subtitle='Offline Music Player' scrollable>
       <View style={styles.container}>
@@ -33,16 +35,16 @@ export default function AboutScreen() {
             Music
           </AppText>
 
-          <AppText variant='body' color={Colors.dark.textSecondary}>
+          <AppText variant='body' color={colors.textSecondary}>
             Offline Music Player
           </AppText>
 
-          <AppText variant='caption' color={Colors.dark.textSecondary}>
+          <AppText variant='caption' color={colors.textSecondary}>
             Version {Constants.expoConfig?.version}
           </AppText>
         </View>
 
-        <AppCard onPress={() => {}}>
+        <AppCard onPress={() => { }}>
           <View style={styles.section}>
             <AboutRow label='Developer' value='Manoj Kumar' />
           </View>
@@ -62,7 +64,7 @@ export default function AboutScreen() {
         </AppCard> */}
 
         <View style={styles.footer}>
-          <AppText variant='caption' color={Colors.dark.textSecondary}>
+          <AppText variant='caption' color={colors.textSecondary}>
             Made with ❤️ by Manoj Kumar
           </AppText>
         </View>
