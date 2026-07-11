@@ -5,38 +5,38 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { IconButton } from '@/components/common/IconButton';
 import { PageLayout } from '@/components/common/PageLayout';
 import SearchBar from '@/components/common/SearchBar';
-import { AlbumCard } from '@/components/music/AlbumCard';
+import { ArtistCard } from '@/components/music/ArtistCard';
 import { Theme } from '@/constants/theme';
-import { useAlbums } from '@/hooks/useAlbums';
+import { useArtists } from '@/hooks/useArtists';
 import { useSearch } from '@/hooks/useSearch';
-import { useAlbumActions } from '@/hooks/useSongActions';
-import { Album } from '@/types/music';
+import { useArtistActions } from '@/hooks/useSongActions';
+import { Artist } from '@/types/music';
 import { router } from 'expo-router';
 import { Search } from 'lucide-react-native';
 import { useState } from 'react';
 
-export default function AlbumsScreen() {
+export default function ArtistsScreen() {
   const [isSearching, setIsSearching] = useState(false);
 
-  const { albums, loading, error, refresh } = useAlbums();
-  const { openMenu, renderActionSheets } = useAlbumActions();
+  const { artists, loading, error, refresh } = useArtists();
+  const { openMenu, renderActionSheets } = useArtistActions();
 
   const { query, setQuery, clearQuery, filteredItems } = useSearch(
-    albums,
-    (album) => [album.title, album.artist],
+    artists,
+    (artist) => [artist.name],
   );
 
-  const handleAlbumPress = (album: Album) => {
+  const handleArtistPress = (artist: Artist) => {
     router.push({
-      pathname: '/library/album/[id]',
+      pathname: '/artists/[id]',
       params: {
-        id: album.id,
+        id: artist.id,
       },
     });
   };
 
-  const handleMorePress = (album: Album) => {
-    openMenu(album);
+  const handleMorePress = (artist: Artist) => {
+    openMenu(artist);
   };
 
   return (
@@ -45,7 +45,7 @@ export default function AlbumsScreen() {
         isSearching ? (
           <SearchBar
             value={query}
-            placeholder='Search Albums...'
+            placeholder='Search Artist...'
             onChangeText={setQuery}
             onClose={() => {
               clearQuery();
@@ -54,8 +54,8 @@ export default function AlbumsScreen() {
           />
         ) : undefined
       }
-      title='Albums'
-      subtitle={`${albums.length} Albums`}
+      title='Artists'
+      subtitle={`${artists.length} Artists`}
       headerRight={
         <IconButton icon={Search} onPress={() => setIsSearching(true)} />
       }
@@ -63,12 +63,12 @@ export default function AlbumsScreen() {
       <DataState
         loading={loading}
         error={error}
-        isEmpty={albums.length === 0}
+        isEmpty={artists.length === 0}
         empty={
           <EmptyState
-            icon='album'
-            title='No albums found'
-            description="Your music library doesn't contain any albums yet."
+            icon='person'
+            title='No artists found'
+            description='Artists will appear here after your music library is scanned.'
           />
         }
       >
@@ -76,17 +76,17 @@ export default function AlbumsScreen() {
           data={filteredItems}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <AlbumCard
-              album={item}
-              onPress={handleAlbumPress}
+            <ArtistCard
+              artist={item}
+              onPress={handleArtistPress}
               onMorePress={handleMorePress}
             />
           )}
-          contentContainerStyle={styles.content}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
           refreshing={loading}
           onRefresh={refresh}
-          showsVerticalScrollIndicator={false}
         />
       </DataState>
       {renderActionSheets()}

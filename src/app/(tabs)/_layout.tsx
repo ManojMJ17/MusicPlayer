@@ -1,6 +1,7 @@
 import { useTheme } from '@/theme/useTheme';
 import { Tabs } from 'expo-router';
 import { Music, Disc, Mic, ListMusic, Heart, Settings } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
  * Custom tab bar that renders the MiniPlayer directly above the tab bar.
@@ -10,6 +11,7 @@ import { Music, Disc, Mic, ListMusic, Heart, Settings } from 'lucide-react-nativ
 
 export default function TabsLayout() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -23,9 +25,9 @@ export default function TabsLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: 64,
+          height: 64 + insets.bottom,
           paddingTop: 8,
-          paddingBottom: 8,
+          paddingBottom: 8 + insets.bottom,
         },
 
         tabBarLabelStyle: {

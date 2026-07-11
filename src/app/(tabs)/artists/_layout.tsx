@@ -1,10 +1,6 @@
 import { Stack } from 'expo-router';
 
-export const unstable_settings = {
-  initialRouteName: '../songs',
-};
-
-export default function LibraryLayout() {
+export default function ArtistsLayout() {
   return (
     <Stack
       screenOptions={{

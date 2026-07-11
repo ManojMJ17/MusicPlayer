@@ -145,7 +145,7 @@ export function useActionMenu(playlistId?: string) {
     const albumKey = song.album.trim().toLowerCase();
     closeAll();
     router.push({
-      pathname: '/library/album/[id]',
+      pathname: '/albums/[id]',
       params: { id: albumKey },
     });
   }, [selectedItem, itemType, closeAll]);
@@ -156,7 +156,7 @@ export function useActionMenu(playlistId?: string) {
     const artistKey = song.artist.trim().toLowerCase();
     closeAll();
     router.push({
-      pathname: '/library/artist/[id]',
+      pathname: '/artists/[id]',
       params: { id: artistKey },
     });
   }, [selectedItem, itemType, closeAll]);

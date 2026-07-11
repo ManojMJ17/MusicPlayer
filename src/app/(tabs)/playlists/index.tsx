@@ -16,7 +16,7 @@ export default function PlaylistsScreen() {
 
   const handlePlaylistPress = (playlist: Playlist) => {
     router.push({
-      pathname: '/library/playlist/[id]',
+      pathname: '/playlists/[id]',
       params: {
         id: playlist.id,
       },

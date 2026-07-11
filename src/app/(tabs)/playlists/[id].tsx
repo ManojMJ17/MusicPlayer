@@ -103,13 +103,13 @@ export default function PlaylistScreen() {
                   })}
                 </View>
                 <AppText style={styles.title}>{playlist.name}</AppText>
-
+ 
                 <AppText variant='body' color={colors.textSecondary}>
                   {playlist
                     ? (descriptionMap[playlist.id] ?? 'Smart Playlist')
                     : ''}
                 </AppText>
-
+ 
                 <AppText variant='caption' color={colors.textSecondary}>
                   {songs.length} {songs.length === 1 ? 'song' : 'songs'}
                 </AppText>

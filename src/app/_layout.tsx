@@ -12,12 +12,7 @@ export default function RootLayout() {
 
   const pathname = usePathname();
 
-  const hideMiniPlayer =
-    pathname === '/player' ||
-    pathname === '/about' ||
-    pathname.startsWith('/library/album') ||
-    pathname.startsWith('/library/artist') ||
-    pathname.startsWith('/library/playlist');
+  const hideMiniPlayer = pathname === '/player';
 
   const showMiniPlayer = !hideMiniPlayer;
 

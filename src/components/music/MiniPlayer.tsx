@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Theme } from '@/constants/theme';
 import { usePlayer } from '@/hooks/usePlayer';
@@ -13,6 +14,7 @@ const DEFAULT_ARTWORK = require('@/assets/images/default-album.png');
 
 export function MiniPlayer() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const { currentSong, isPlaying, pause, resume, next, previous } = usePlayer();
 
@@ -60,6 +62,7 @@ export function MiniPlayer() {
         {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
+          bottom: 64 + insets.bottom,
         },
         pressed && styles.pressed,
       ]}
@@ -126,8 +129,6 @@ const styles = StyleSheet.create({
 
     left: 0,
     right: 0,
-
-    bottom: 64,
 
     height: 72,
 

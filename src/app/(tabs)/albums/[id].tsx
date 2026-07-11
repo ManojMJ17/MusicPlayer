@@ -1,11 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { Disc } from 'lucide-react-native';
 
 import { DataState } from '@/components/common/DataState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { PageLayout } from '@/components/common/PageLayout';
+import { AlbumArtwork } from '@/components/music/AlbumArtwork';
 import { SongCard } from '@/components/music/SongCard';
 
 import { AppText } from '@/components/ui/AppText';
@@ -29,6 +29,10 @@ export default function AlbumScreen() {
 
   const songs = useLibraryStore((state) => state.songs).filter(
     (song) => song.album.trim().toLowerCase() === id?.trim().toLowerCase()
+  );
+
+  const albumData = useLibraryStore((state) =>
+    state.albums.find((a) => a.id === id)
   );
 
   const album = songs[0]?.album ?? 'Album';
@@ -70,18 +74,12 @@ export default function AlbumScreen() {
           keyExtractor={(item) => item.id}
           ListHeaderComponent={
             <View style={styles.header}>
-              <View
-                style={[
-                  styles.cover,
-                  {
-                    backgroundColor: colors.surfaceVariant,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                  },
-                ]}
-              >
-                <Disc size={60} color={colors.primary} />
-              </View>
+              <AlbumArtwork
+                songId={albumData?.coverSongId || songs[0]?.id}
+                title={album}
+                size='xxl'
+                style={{ borderRadius: Theme.radius.lg }}
+              />
               <AppText style={styles.title}>{album}</AppText>
               <AppText variant='body' color={colors.textSecondary}>
                 {artist}

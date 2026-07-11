@@ -1,16 +1,17 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 
 import { Theme } from '@/constants/theme';
 import { artworkService } from '@/services/artwork.service';
 import { useTheme } from '@/theme/useTheme';
 import { useEffect, useState } from 'react';
 
-type ArtworkSize = 'sm' | 'md' | 'lg' | 'xl';
+type ArtworkSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 interface AlbumArtworkProps {
   songId?: string | null;
   title?: string;
   size?: ArtworkSize;
+  style?: StyleProp<ViewStyle>;
 }
 
 const DEFAULT_ARTWORK = require('@/assets/images/default-album.png');
@@ -20,12 +21,14 @@ const SIZE_MAP: Record<ArtworkSize, number> = {
   md: 64,
   lg: 96,
   xl: 120,
+  xxl: 200,
 };
 
 export function AlbumArtwork({
   songId,
   title,
   size = 'md',
+  style,
 }: AlbumArtworkProps) {
   const { colors } = useTheme();
 
@@ -62,6 +65,7 @@ export function AlbumArtwork({
           borderRadius: Theme.radius.md,
           backgroundColor: colors.surfaceVariant,
         },
+        style,
       ]}
     >
       <Image

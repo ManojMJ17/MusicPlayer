@@ -88,13 +88,13 @@ export default function ArtistScreen() {
                 >
                   <Mic size={60} color={colors.primary} />
                 </View>
-
+ 
                 <AppText style={styles.title}>{artist.name}</AppText>
-
+ 
                 <AppText variant='body' color={colors.textSecondary}>
                   {artist.albumCount} Albums • {artist.songCount} Songs
                 </AppText>
-
+ 
                 <AppText variant='caption' color={colors.textSecondary}>
                   {artist.name} • {artist.albumCount} albums {artist.songCount}{' '}
                   songs
