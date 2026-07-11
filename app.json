@@ -2,13 +2,11 @@
   "expo": {
     "name": "Music",
     "slug": "music",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "scheme": "music",
     "userInterfaceStyle": "automatic",
-
     "icon": "./src/assets/images/logo.png",
-
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/logo.png",
@@ -23,11 +21,9 @@
       ],
       "package": "com.manoj.music"
     },
-
     "web": {
       "output": "static"
     },
-
     "plugins": [
       "expo-router",
       [
@@ -41,7 +37,6 @@
       "expo-status-bar",
       "expo-audio"
     ],
-
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
